@@ -11,7 +11,11 @@
 .menu-panel { left: 265px; width: 670px; }
 
 /* ---------- TV screens ---------- */
-.tv { overflow: hidden; border-radius: 4px; pointer-events: auto; }
+/* the TV of "רקע לסרטון חדש" (x 472–1220, y 267–692 of 1672×941) – larger and lower than the old one */
+.tv { left: 340px; top: 193px; width: 536px; height: 303px; overflow: hidden; border-radius: 3px; pointer-events: auto; }
+.boost-title { left: 340px; top: 136px; width: 536px; }
+.boost-card { left: 340px; top: 514px; width: 536px; }
+.char.peek { z-index: 3; }
 .tv iframe { width: 100%; height: 100%; border: 0; display: block; background: #000; }
 .tv-play { border: 0; background: none; padding: 0; cursor: pointer; transition: transform .18s; }
 .tv-play svg { display: block; width: 92px; height: 64px; filter: drop-shadow(0 4px 6px rgba(0,0,0,.4)); }
@@ -49,7 +53,7 @@
 .ic-dark img { width: 80%; height: 80%; object-fit: contain; }
 .ic-dark.sm { width: 46px; height: 46px; }
 .rate-change .ic-dark { width: 56px; height: 56px; }
-.rate-change .ic-dark img { width: 46px; height: 46px; }
+.rate-change .ic-dark img { width: 46px; height: 46px; transform: rotate(-90deg); }   /* the "up" arrow turned to point left: 3.60 → 4.00 in RTL reading */
 .ex-disc { margin: 12px auto 0; width: fit-content; font-size: 16px; font-weight: 700; color: var(--navy); background: #FFFFFF; border-radius: 16px; padding: 6px 18px; text-shadow: none; }
 .glyph { width: 64px; height: 64px; border-radius: 50%; background: var(--navy); color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 30px; flex: none; }
 .ex-wall.fraud { top: 78px; }
@@ -128,7 +132,8 @@
 .rep-badge .rb-v { font-size: 30px; font-weight: 800; color: var(--cyan); line-height: 1.1; direction: ltr; }
 .rep-badge.bump { animation: bump .5s; }
 .st-card { left: 430px; top: 92px; width: 700px; padding: 18px 26px 18px; max-height: 560px; display: flex; flex-direction: column; }
-.st-card.wide { top: 62px; max-height: 608px; padding: 12px 24px 12px; }
+/* 5-option station: starts below the chapter tag (which ends at y 84) and is wider, so all five chips share one line */
+.st-card.wide { top: 92px; left: 392px; width: 750px; max-height: 578px; padding: 12px 22px 12px; }
 .st-card.wide .st-lead { margin-top: 4px; font-size: 17px; }
 .st-card.wide .st-rows { gap: 5px; margin-top: 8px; }
 .st-card.wide .st-foot { margin-top: 8px; }
@@ -152,7 +157,11 @@
 .st-card.wide .st-row { grid-template-columns: 1fr; gap: 4px; padding: 5px 10px 6px; }
 .st-card.wide .st-txt { font-size: 15.5px; line-height: 1.25; }
 .st-card.wide .st-opts { flex-wrap: wrap; }
-.st-card.wide .st-opt { min-width: 0; height: 31px; font-size: 14.5px; padding: 0 10px; }
+.st-card.wide .st-opt { min-width: 0; height: 31px; font-size: 14.5px; padding: 0 9px; }
+.st-card.wide .st-opts { gap: 5px; align-items: stretch; }
+/* an explanation in brackets goes on a second, smaller line inside its chip – the five chips stay on one row */
+.st-opt:has(.opt-sub) { height: auto !important; padding: 3px 12px; line-height: 1.1; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; }
+.st-opt .opt-sub { display: block; font-size: 12px; font-weight: 600; }
 .st-foot { margin-top: 12px; display: flex; align-items: center; gap: 12px; }
 .st-fb { left: 450px; bottom: 66px; width: 660px; z-index: 35; }
 .st-fb .inline-fb { box-shadow: 0 10px 30px rgba(0,0,0,.35); }

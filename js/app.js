@@ -51,7 +51,7 @@
     const amounts = [];
     const marked = html.replace(MONEY_RE, (m, a) => "\u0001" + (amounts.push(a) - 1) + "\u0001");
     return ltrMath(marked).replace(/\u0001(\d+)\u0001/g, (m, i) =>
-      `<span class="money-value" dir="ltr"><span class="amount">${amounts[i]}</span><span class="currency">₪</span></span>`);
+      `<span class="money-value" dir="ltr"><span class="currency">₪</span><span class="amount">${amounts[i]}</span></span>`);   // ₪ to the LEFT of the number
   }
 
   function toast(msg) {
@@ -161,15 +161,17 @@
       <p class="warmup-outro">${s.outro}</p>
     </div>`;
 
-  /* TV room: Adam and Aya on both sides of the screen */
+  /* TV room ("רקע לסרטון חדש"): Adam peeks in from the left and Aya (mirrored) from the right. Each image is cut
+     along a vertical edge – that edge is lined up with the inner edge of the wooden panels (x 205 / x 990), so they
+     look as if they lean out from behind them. Canvas 512×768 shown at 400×600, bottom on the stage edge. */
   const tvPair = () => `
-    ${hero("adam-hips", 100, 214, 440, A("fly-l", 300))}
-    ${hero("aya-hips", 790, 210, 444, A("fly-r", 400))}`;
+    <img class="char peek ${A("fly-l", 300)}" src="${IMG}adam-peek.png" alt="אדם מציץ ומחייך" style="${pos(-60, 75, 400, 600)}">
+    <img class="char peek ${A("fly-r", 400)}" src="${IMG}aya-peek.png" alt="איה מציצה ומחייכת" style="${pos(870, 75, 400, 600)}">`;
   // play button drawn as a vector (the 68×47 PNG pixelates when scaled) – same look: cyan rounded box, white triangle
   const PLAY_ICON = `<svg viewBox="0 0 68 47" aria-hidden="true"><rect x="0" y="0" width="68" height="47" rx="12" fill="#5BCCE0"/><path d="M27 14.5v18l15-9z" fill="#FFFFFF"/></svg>`;
 
   R.boost = s => `
-    <img class="bg" src="${IMG}bg-tv.jpg" alt="">
+    <img class="bg" src="${IMG}bg-tv2.jpg" alt="">
     <div class="boost-title ${A("fly-t", 0)}">${s.title}</div>
     ${tvPair()}
     <div class="tv ${A("fade", 500)}" data-tv>
@@ -181,7 +183,7 @@
   R.videoSlot = s => {
     const v = VIDEOS[s.video];
     return `
-    <img class="bg" src="${IMG}bg-tv.jpg" alt="">
+    <img class="bg" src="${IMG}bg-tv2.jpg" alt="">
     <div class="boost-title ${A("fly-t", 0)}">${v.title}</div>
     ${tvPair()}
     <div class="tv ${A("fade", 500)}" data-tv>
@@ -325,7 +327,7 @@
       <div class="st-row" data-row="${i}" hidden>
         <p class="st-txt">${money(r.text)}</p>
         <div class="st-opts" role="radiogroup" aria-label="${r.text}">
-          ${s.options.map((o, j) => `<button type="button" class="st-opt" role="radio" aria-checked="false" data-r="${i}" data-o="${j}">${o}</button>`).join("")}
+          ${s.options.map((o, j) => `<button type="button" class="st-opt" role="radio" aria-checked="false" data-r="${i}" data-o="${j}">${o.replace(/\s*\((.+)\)$/, '<small class="opt-sub">($1)</small>')}</button>`).join("")}
         </div>
       </div>`;
     return `
@@ -486,15 +488,15 @@
     const tag = (side, label, inner) => `<div class="plate-tag ${side}">${label ? `<span class="pt-l">${label}</span>` : ""}${inner}</div>`;
     let tags = "";
     if (s.kind === "two") tags = tag("right", s.rateLabel || "השער היציג", `<input class="answer-input" data-in="rate" inputmode="decimal" autocomplete="off" placeholder="0.0000" aria-label="${s.rateLabel || "השער היציג"}">`) +
-      tag("left", "המחיר בשקלים", `<span class="in-wrap"><input class="answer-input" data-in="price" inputmode="decimal" autocomplete="off" placeholder="0.00" aria-label="המחיר בשקלים"><span class="cur">₪</span></span>`);
-    if (s.kind === "one") tags = tag("right", "המחיר הקודם", `<span class="fixed-val" dir="ltr">${s.fixed} ₪</span>`) +
-      tag("left", "המחיר החדש", `<span class="in-wrap"><input class="answer-input" data-in="price" inputmode="decimal" autocomplete="off" placeholder="0.00" aria-label="המחיר החדש בשקלים"><span class="cur">₪</span></span>`);
+      tag("left", "המחיר בשקלים", `<span class="in-wrap"><span class="cur">₪</span><input class="answer-input" data-in="price" inputmode="decimal" autocomplete="off" placeholder="0.00" aria-label="המחיר בשקלים"></span>`);
+    if (s.kind === "one") tags = tag("right", "המחיר הקודם", `<span class="fixed-val" dir="ltr">₪ ${s.fixed}</span>`) +
+      tag("left", "המחיר החדש", `<span class="in-wrap"><span class="cur">₪</span><input class="answer-input" data-in="price" inputmode="decimal" autocomplete="off" placeholder="0.00" aria-label="המחיר החדש בשקלים"></span>`);
     const deal = s.deal ? `
       <div class="deal ${s.deal.old ? "change" : ""}">
         ${s.deal.date ? `<div class="d-row"><span class="k">תאריך</span><span>${s.deal.date}</span></div>` : ""}
         <div class="d-row"><span class="k">מוצר</span><span>${s.deal.item}</span></div>
         <div class="d-row"><span class="k">מחיר</span><span>${s.deal.price}</span></div>
-        ${s.deal.old ? `<div class="d-row"><span class="k">שער הדולר</span><span class="rate-move"><bdi>${s.deal.old}</bdi> ← <b><bdi>${s.deal.now}</bdi></b></span></div>` : ""}
+        ${s.deal.old ? `<div class="d-row"><span class="k">שער הדולר</span><span class="rate-move">${money(s.deal.old)} ← <b>${money(s.deal.now)}</b></span></div>` : ""}
       </div>` : "";
     const head = `<div class="w-head"><span class="num-chip">תרגיל ${s.num}</span><span class="w-title">${s.flag ? `<span class="flag" aria-hidden="true">${FLAGS[s.flag]}</span>` : ""}${s.icon ? `<span class="ic-dark sm"><img src="${ICON + s.icon}" alt=""></span>` : ""}${s.title}</span></div>`;
     let body;
@@ -515,7 +517,7 @@
       <p class="w-note">שימו לב – יש להזין את כל הספרות שאחרי הנקודה.</p>`;
     else if (s.kind === "one") body = `${head}<div class="w-grid"><div><p class="w-story">${s.story}</p><p class="w-task">${s.task}</p></div>${deal}</div>`;
     else body = `${head}
-      ${s.rateChange ? `<div class="rate-change"><span>שער הדולר:</span><bdi>${s.rateChange[0]}</bdi><span class="ic-dark"><img src="${ICON}arrow-up.gif" alt="עלה ל"></span><bdi><b>${s.rateChange[1]}</b></bdi></div>` : `<p class="w-story">${s.story}</p>`}
+      ${s.rateChange ? `<div class="rate-change"><span>שער הדולר:</span>${money(s.rateChange[0])}<span class="ic-dark"><img src="${ICON}arrow-up.gif" alt="עלה ל"></span><b>${money(s.rateChange[1])}</b></div>` : `<p class="w-story">${s.story}</p>`}
       <p class="w-task">${s.task}</p>
       <div class="plate-opts ${s.long ? "long" : ""}">
         ${s.options.map((o, i) => `<button type="button" class="plate-opt" data-opt="${i}"><span class="disc" aria-hidden="true"></span><span class="po-t">${s.long ? ["א", "ב", "ג", "ד"][i] + ". " : ""}${o}</span></button>`).join("")}
@@ -852,8 +854,7 @@
         <p class="txt" style="font-size:17.5px">${s.learned}</p>
         <ul class="bul">${s.bullets.map(b => `<li>${b}</li>`).join("")}</ul>
         <p class="closing">${s.closing}</p>
-        <div style="margin-top:12px;text-align:left"><button class="btn" data-go="menu">חזרה לאימון</button></div>
-      </div>`;
+      </div>`;                                   // no "חזרה לאימון" button – the home button returns to the menu
   };
 
   /* ---------------------------------------------------- stretching */
