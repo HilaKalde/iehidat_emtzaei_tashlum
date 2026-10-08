@@ -161,12 +161,12 @@
       <p class="warmup-outro">${s.outro}</p>
     </div>`;
 
-  /* TV room ("רקע לסרטון חדש"): Adam peeks in from the left and Aya (mirrored) from the right. Each image is cut
-     along a vertical edge – that edge is lined up with the inner edge of the wooden panels (x 205 / x 990), so they
-     look as if they lean out from behind them. Canvas 512×768 shown at 400×600, bottom on the stage edge. */
+  /* TV room ("רקע לסרטון חדש"): Adam peeks in at the left edge of the screen and Aya (mirrored) at the right edge,
+     as in the client's reference: hands at x≈130 / x≈1018, heads at y≈200 / y≈230, bodies running off the stage.
+     Canvas 512×768 shown at 400×600. */
   const tvPair = () => `
-    <img class="char peek ${A("fly-l", 300)}" src="${IMG}adam-peek.png" alt="אדם מציץ ומחייך" style="${pos(-60, 75, 400, 600)}">
-    <img class="char peek ${A("fly-r", 400)}" src="${IMG}aya-peek.png" alt="איה מציצה ומחייכת" style="${pos(870, 75, 400, 600)}">`;
+    <img class="char peek ${A("fly-l", 300)}" src="${IMG}adam-peek.png" alt="אדם מציץ ומחייך" style="${pos(-78, 143, 400, 600)}">
+    <img class="char peek ${A("fly-r", 400)}" src="${IMG}aya-peek.png" alt="איה מציצה ומחייכת" style="${pos(917, 176, 400, 600)}">`;
   // play button drawn as a vector (the 68×47 PNG pixelates when scaled) – same look: cyan rounded box, white triangle
   const PLAY_ICON = `<svg viewBox="0 0 68 47" aria-hidden="true"><rect x="0" y="0" width="68" height="47" rx="12" fill="#5BCCE0"/><path d="M27 14.5v18l15-9z" fill="#FFFFFF"/></svg>`;
 
