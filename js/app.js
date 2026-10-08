@@ -161,12 +161,13 @@
       <p class="warmup-outro">${s.outro}</p>
     </div>`;
 
-  /* TV room ("רקע לסרטון חדש"): Adam peeks in at the left edge of the screen and Aya (mirrored) at the right edge,
-     as in the client's reference: hands at x≈130 / x≈1018, heads at y≈200 / y≈230, bodies running off the stage.
-     Canvas 512×768 shown at 400×600. */
+  /* TV room ("רקע לסרטון חדש"): the characters peek in from behind the edges of the slide itself (client reference).
+     Both images are used in the directions supplied in the assets folder: Adam's body cut line (x≈176 of the 512px
+     image) sits on the left edge, his hand gripping it; Aya's cut line (x 357) sits on the right edge.
+     Canvas 512×768 shown at 369×553 (×0.72). */
   const tvPair = () => `
-    <img class="char peek ${A("fly-l", 300)}" src="${IMG}adam-peek.png" alt="אדם מציץ ומחייך" style="${pos(-78, 143, 400, 600)}">
-    <img class="char peek ${A("fly-r", 400)}" src="${IMG}aya-peek.png" alt="איה מציצה ומחייכת" style="${pos(917, 176, 400, 600)}">`;
+    <img class="char peek ${A("fly-l", 300)}" src="${IMG}adam-peek.png" alt="אדם מציץ מקצה המסך ומחייך" style="${pos(-129, 153, 369, 553)}">
+    <img class="char peek ${A("fly-r", 400)}" src="${IMG}aya-peek.png" alt="איה מציצה מקצה המסך ומחייכת" style="${pos(943, 183, 369, 553)}">`;
   // play button drawn as a vector (the 68×47 PNG pixelates when scaled) – same look: cyan rounded box, white triangle
   const PLAY_ICON = `<svg viewBox="0 0 68 47" aria-hidden="true"><rect x="0" y="0" width="68" height="47" rx="12" fill="#5BCCE0"/><path d="M27 14.5v18l15-9z" fill="#FFFFFF"/></svg>`;
 
