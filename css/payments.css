@@ -126,10 +126,9 @@
 /* payment-method layers: the text on the right, Adam training at that station on the left */
 .ex-modal.has-athlete { left: 170px; width: 860px; }
 .has-athlete .exm-grid { display: grid; grid-template-columns: 1fr 230px; gap: 22px; align-items: start; }
-.exm-athlete { margin: 0; height: 300px; border-radius: 18px; background: linear-gradient(180deg, #E8F6FA 0%, #CFEAF1 100%);
-  display: flex; flex-direction: column; align-items: center; justify-content: flex-end; overflow: hidden; padding: 8px 6px 0; }
-.exm-athlete img { flex: 1; min-height: 0; width: 100%; object-fit: contain; object-position: center bottom; }
-.exm-athlete figcaption { align-self: stretch; text-align: center; background: #0B2B3B; color: #FFFFFF; font-size: 14.5px; font-weight: 700; padding: 5px 6px; margin: 0 -6px; }
+/* just Adam training – no frame, no caption */
+.exm-athlete { height: 300px; display: flex; align-items: flex-end; justify-content: center; }
+.exm-athlete img { width: 100%; height: 100%; object-fit: contain; object-position: center bottom; }
 .fraud-modal { top: 40px; max-height: 595px; width: 760px; left: 220px; }
 .fr-sec { margin-top: 10px; border-radius: 16px; padding: 9px 16px; }
 .fr-sec b { font-size: 18px; display: block; margin-bottom: 2px; }

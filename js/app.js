@@ -248,10 +248,7 @@
             <div class="exm-head"><img src="${ICON + it.icon}" alt=""><div class="h-title">${it.label}</div></div>
             ${it.body.map(p => `<p class="exm-p">${p}</p>`).join("")}
           </div>
-          ${st ? `<figure class="exm-athlete">
-            <img data-gif="${it.athlete}" alt="אדם מתאמן בתחנה – ${st.reps}">
-            <figcaption>תחנה ${st.num} · ${st.title.replace(/^.*\|\s*/, "")}</figcaption>
-          </figure>` : ""}
+          ${st ? `<div class="exm-athlete"><img data-gif="${it.athlete}" alt="אדם מתאמן – ${st.reps}"></div>` : ""}
         </div>
       </div>`;
   }
@@ -273,7 +270,7 @@
         <div class="h-title">${s.title}</div>
         <p class="txt ex-lead">${s.lead}</p>
         <div class="ex-grid">${s.items.map(btn).join("")}</div>
-        <p class="ex-progress ${allVisited(s) ? "done" : ""}" data-ex-progress>${progressText(s)}</p>
+        <p class="ex-progress ${allVisited(s) ? "done" : ""}" data-ex-progress ${allVisited(s) ? "" : "hidden"}>${progressText(s)}</p>
         ${s.afterAll ? `<div class="ex-after" data-after ${allVisited(s) ? "" : "hidden"}><span class="ic-dark"><img src="${ICON + s.afterAll.icon}" alt=""></span><p>${s.afterAll.text}</p></div>` : ""}
         ${s.disclaimer ? `<p class="ex-disc">${s.disclaimer}</p>` : ""}
       </div>
@@ -307,6 +304,7 @@
       const prog = $("[data-ex-progress]", scr);
       prog.textContent = progressText(s);
       if (allVisited(s) && !prog.classList.contains("done")) {
+        prog.hidden = false;                                   // no "X מתוך 5" count – only the closing message
         prog.classList.add("done", "a", "pop");
         // all the payment methods were opened – Adam gives a thumbs-up
         const h = $('[data-hero="adam"]', scr);
