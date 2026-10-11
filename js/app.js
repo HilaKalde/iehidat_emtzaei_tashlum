@@ -250,7 +250,7 @@
       const art = s.layout === "fraud" ? `<span class="glyph">${it.glyph}</span>`
         : s.layout === "players" ? `<span class="ball ${it.ball}"></span>` : `<img src="${ICON + it.icon}" alt="">`;
       return `<button type="button" class="ex-btn ${v.includes(it.key) ? "seen" : ""} ${A("pop", 300 + i * 120)}" data-item="${it.key}">
-        ${art}<span class="lbl">${it.label}</span><span class="tick" aria-hidden="true">✓</span></button>`;
+        ${art}<span class="lbl">${it.label}</span>${s.layout === "players" && it.sub ? `<span class="lbl-sub" dir="ltr">(${it.sub})</span>` : ""}<span class="tick" aria-hidden="true">✓</span></button>`;
     };
     const heroes = { "adam": allVisited(s) ? likeImg() : hero("adam", 110, 190, 470, A("fly-l", 200)), "adam-hips": hero("adam-hips", 20, 190, 470, A("fly-l", 200)),
       "aya": hero("aya", 20, 186, 474, A("fly-l", 200)) };
@@ -790,7 +790,7 @@
     </div>`;
 
   /* ------------------------------------------------- tennis (set 4) */
-  const ROUND_COINS = [25, 10, 5];
+  const ROUND_COINS = [25, 20, 10];          // coins for identifying the player after clue 1 / 2 / 3
   R.tennis = s => {
     const first = s.num === 1 && firstVisit;
     return `
