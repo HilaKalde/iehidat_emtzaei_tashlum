@@ -168,11 +168,11 @@
   const tvPair = () => `
     <img class="char peek ${A("fly-l", 300)}" src="${IMG}adam-peek.png" alt="אדם מציץ מקצה המסך ומחייך" style="${pos(-129, 153, 369, 553)}">
     <img class="char peek ${A("fly-r", 400)}" src="${IMG}aya-peek.png" alt="איה מציצה מקצה המסך ומחייכת" style="${pos(943, 183, 369, 553)}">`;
-  // play button drawn as a vector (the 68×47 PNG pixelates when scaled) – same look: cyan rounded box, white triangle
-  const PLAY_ICON = `<svg viewBox="0 0 68 47" aria-hidden="true"><rect x="0" y="0" width="68" height="47" rx="12" fill="#5BCCE0"/><path d="M27 14.5v18l15-9z" fill="#FFFFFF"/></svg>`;
+  // play button: "PLAY.png" from the assets folder (178×143, shown at half size so it stays sharp)
+  const PLAY_ICON = `<img src="${UI}play.png" alt="">`;
 
   R.boost = s => `
-    <img class="bg" src="${IMG}bg-tv2.jpg" alt="">
+    <img class="bg" src="${IMG}bg-tv3.jpg" alt="">
     <div class="boost-title ${A("fly-t", 0)}">${s.title}</div>
     ${tvPair()}
     <div class="tv ${A("fade", 500)}" data-tv>
@@ -184,7 +184,7 @@
   R.videoSlot = s => {
     const v = VIDEOS[s.video];
     return `
-    <img class="bg" src="${IMG}bg-tv2.jpg" alt="">
+    <img class="bg" src="${IMG}bg-tv3.jpg" alt="">
     <div class="boost-title ${A("fly-t", 0)}">${v.title}</div>
     ${tvPair()}
     <div class="tv ${A("fade", 500)}" data-tv>

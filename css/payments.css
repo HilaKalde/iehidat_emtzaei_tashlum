@@ -11,14 +11,14 @@
 .menu-panel { left: 265px; width: 670px; }
 
 /* ---------- TV screens ---------- */
-/* the TV of "רקע לסרטון חדש" (x 472–1220, y 267–692 of 1672×941) – larger and lower than the old one */
-.tv { left: 340px; top: 193px; width: 536px; height: 303px; overflow: hidden; border-radius: 3px; pointer-events: auto; }
-.boost-title { left: 340px; top: 136px; width: 536px; }
-.boost-card { left: 340px; top: 514px; width: 536px; }
+/* the TV of "רקע חדש לסרטון" (x 444–1236, y 272–714 of 1672×941) */
+.tv { left: 319px; top: 195px; width: 568px; height: 317px; overflow: hidden; border-radius: 3px; pointer-events: auto; }
+.boost-title { left: 319px; top: 138px; width: 568px; }
+.boost-card { left: 319px; top: 528px; width: 568px; padding: 14px 26px; }
 .char.peek { z-index: 3; }
 .tv iframe { width: 100%; height: 100%; border: 0; display: block; background: #000; }
 .tv-play { border: 0; background: none; padding: 0; cursor: pointer; transition: transform .18s; }
-.tv-play svg { display: block; width: 92px; height: 64px; filter: drop-shadow(0 4px 6px rgba(0,0,0,.4)); }
+.tv-play img { display: block; width: 89px; height: 72px; filter: drop-shadow(0 4px 6px rgba(0,0,0,.4)); }
 .tv-play:is(:hover, :focus-visible) { transform: scale(1.08); }
 .tv-len { left: 361px; top: 432px; width: 478px; text-align: center; color: #FFFFFF; font-size: 17px; font-weight: 700; text-shadow: 0 1px 4px rgba(0,0,0,.6); }
 .video-blank { z-index: 30; display: flex; align-items: center; justify-content: center; }
