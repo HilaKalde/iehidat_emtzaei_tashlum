@@ -102,7 +102,7 @@ const DATA = {
     {
       id: "intro", scene: "פתיחה", name: "פתיחה", type: "intro",
       title: "אילו שרירים נחזק היום?",
-      text: "היום נתרגל <b>אמצעי תשלום שונים</b> ונלמד <b>לזהות סיכונים</b> ולקבל החלטות חכמות בעולם התשלומים.",
+      text: "היום נתרגל אמצעי תשלום שונים ונלמד לזהות סיכונים ולקבל החלטות חכמות בעולם התשלומים.",
       text2: "אז… קחו נשימה, מתחו את השרירים.<br><b>מתחילים את האימון הפיננסי שלנו!</b>",
       button: "מתחילים באימון",
       next: "menu"
@@ -121,7 +121,7 @@ const DATA = {
       // the tennis court is seen through the open door at the left – a door-shaped hotspot over the background
       door: { set: "tennis", go: "s4-video", clip: "polygon(4% 8%, 100% 21%, 100% 88%, 4% 100%)", box: [30, 95, 160, 360], pill: [12, 210] },
       tabs: [
-        { icon: "tab-warmup.png",   label: "חימום",       go: "warmup",   side: "right", top: 22 },   // top-right corner, beside the title panel
+        { icon: "tab-warmup.png",   label: "חימום",       go: "warmup",   side: "right", top: 104 },  // top-right, just below the title panel's height
         { icon: "tab-stretch.png",  label: "מתיחות",      go: "st-intro", side: "left",  top: 520 },
         { icon: "tab-strength.png", label: "אימון מתקדם", go: "advanced", side: "left",  top: 579 }
       ],

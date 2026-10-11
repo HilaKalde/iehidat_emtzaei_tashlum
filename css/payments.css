@@ -165,6 +165,35 @@
 .calculator-link-btn.inline .calc-tx span { font-size: 15.5px; }
 
 /* ---------- crossfit stations ---------- */
+/* progress bar of the five stations: top strip between the coin counter (ends x≈230) and the chapter tag (starts x 923) */
+.stepper-wrap { left: 252px; top: 10px; width: 656px; z-index: 6; }
+.st-stepper {
+  position: relative; display: flex; justify-content: space-between; align-items: flex-start;
+  padding: 7px 12px 6px; border-radius: 18px; background: rgba(11,43,59,.9); box-shadow: 0 4px 10px rgba(0,0,0,.3);
+}
+/* the line joining the five dots (behind them) */
+.stp-line { position: absolute; left: 70px; right: 70px; top: 27px; height: 3px; border-radius: 2px; background: rgba(255,255,255,.28); }
+.stp {
+  position: relative; z-index: 1; width: 124px; padding: 0; border: 0; background: none; cursor: pointer; font-family: inherit;
+  display: flex; flex-direction: column; align-items: center; gap: 3px; color: #FFFFFF;
+}
+.stp-dot {
+  position: relative; width: 42px; height: 42px; border-radius: 50%; background: #FFFFFF;
+  display: flex; align-items: center; justify-content: center; border: 3px solid rgba(255,255,255,.35);
+  transition: transform 180ms ease, border-color 180ms ease;
+}
+.stp-dot img { width: 30px; height: 30px; object-fit: contain; }
+.stp-lbl { font-size: 13px; font-weight: 700; line-height: 1.1; white-space: nowrap; opacity: .85; }
+.stp:is(:hover, :focus-visible) .stp-dot { transform: translateY(-2px); border-color: var(--cyan); }
+.stp:focus-visible { outline: none; }
+.stp:focus-visible .stp-dot { outline: 3px solid #FFFFFF; outline-offset: 2px; }
+/* current station: cyan ring, a little larger, full-strength label */
+.stp.here .stp-dot { border-color: var(--cyan); transform: scale(1.12); box-shadow: 0 0 0 4px rgba(102,209,227,.3); }
+.stp.here .stp-lbl { opacity: 1; color: var(--cyan); }
+/* completed: green ring, ✓ badge and the coins earned */
+.stp.done .stp-dot { border-color: #6BBF4E; }
+.stp-ok { position: absolute; right: -6px; top: -5px; width: 18px; height: 18px; border-radius: 50%; background: #2E6B1F; color: #FFFFFF; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+.stp-coins { position: absolute; left: 22px; top: 26px; background: #F5B301; color: #0B2B3B; font-size: 10.5px; font-weight: 800; border-radius: 8px; padding: 1px 5px; line-height: 1.2; }
 .rep-badge {
   left: 70px; top: 112px; z-index: 5; display: flex; flex-direction: column; align-items: center; min-width: 170px; padding: 6px 16px 8px;
   background: #0B2233; border: 2px solid rgba(102,209,227,.55); border-radius: 14px; box-shadow: 0 4px 5px rgba(0,0,0,.3);

@@ -342,6 +342,26 @@
   // the station GIFs are the "פעם אחת" versions: each loop is exactly one repetition, so n loops = n reps.
   // Loop lengths, read from the GIF frame delays:
   const REP_MS = { "st1-squat": 2360, "st2-deadlift": 5080, "st3-rope": 880, "st4-box": 2040, "st5-pushup": 2800 };
+  /* progress bar of the five crossfit stations (top strip, between the coin counter and the chapter tag).
+     Station 1 on the right (reading order). Done = ✓ + coins earned, current = highlighted; every step is a
+     button, so the learner can move between the stations in any order. */
+  const STATION_ICONS = ["pm-cash.gif", "pm-cards.gif", "pm-apps.gif", "pm-transfer.gif", "pm-wallet.gif"];
+  const stationScreens = () => DATA.screens.filter(x => x.type === "station");
+  const stationName = x => x.title.replace(/^תחנה \d+ – /, "").replace(/\s*\|.*$/, "");
+  function stepperHtml(cur) {
+    const steps = stationScreens().map((x, i) => {
+      const a = ans(x.id), done = !!(a && a.completed), here = x.id === cur.id;
+      const state = done ? `הושלמה, ${a.coins} מטבעות` : "טרם הושלמה";
+      return `<button type="button" class="stp ${done ? "done" : ""} ${here ? "here" : ""}" data-go="${x.id}"
+          ${here ? 'aria-current="step"' : ""} aria-label="תחנה ${i + 1} – ${stationName(x)}, ${state}${here ? " (התחנה הנוכחית)" : ""}">
+        <span class="stp-dot"><img src="${ICON + STATION_ICONS[i]}" alt="">${done ? `<span class="stp-ok" aria-hidden="true">✓</span>` : ""}</span>
+        <span class="stp-lbl">${i + 1}. ${stationName(x)}</span>
+        ${done ? `<span class="stp-coins" aria-hidden="true">${a.coins}/20</span>` : ""}
+      </button>`;
+    }).join("");
+    return `<nav class="st-stepper" aria-label="התקדמות בתחנות הקרוספיט"><span class="stp-line" aria-hidden="true"></span>${steps}</nav>`;
+  }
+
   R.station = s => {
     const first = firstVisit;
     const box = STATION_BOX[s.hero];
@@ -356,6 +376,7 @@
       <img class="bg" src="${IMG}bg-clean.jpg" alt="">
       <div class="q-scrim light" aria-hidden="true"></div>
       <img class="char ${first ? A("fly-l", 150) : ""}" data-hero="${s.hero}" src="${IMG + s.hero}.png" alt="" style="${pos(...box)}">
+      <div class="stepper-wrap" data-stepper>${stepperHtml(s)}</div>
       <div class="rep-badge ${first ? A("fly-t", 250) : ""}" aria-live="polite"><span class="rb-l">${s.reps}</span><span class="rb-v"><bdi data-reps>0</bdi> / ${s.rows.length}</span></div>
       <div class="card st-card ${s.wide ? "wide" : ""} ${first ? A("fly-b", 0) : ""}">
         <div class="st-head"><span class="num-chip">תחנה ${s.num}</span><span class="st-title">${s.title.replace(/^תחנה \d+ – /, "")}</span></div>
@@ -419,6 +440,7 @@
       s.rows.forEach((r, i) => { if (picks[i] === r.correct) { n++; coins += r.coins; } });
       setAns(s.id, { picks: picks.slice(), completed: true, correctCount: n, coins, fbOpen: true });
       markFinal(); updateChrome(s);
+      $("[data-stepper]", scr).innerHTML = stepperHtml(s);   // this station now shows ✓ and its coins
       // Adam completes one repetition for every correct answer
       // crossfit exception to the "animate only when all is right" rule: Adam performs one repetition per
       // correct answer. The count follows the GIF's own rhythm (REP_MS) and starts once the GIF is on screen;
