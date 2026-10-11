@@ -183,12 +183,13 @@
   transition: transform 180ms ease, border-color 180ms ease;
 }
 .stp-dot img { width: 30px; height: 30px; object-fit: contain; }
-.stp-lbl { font-size: 13px; font-weight: 700; line-height: 1.1; white-space: nowrap; opacity: .85; }
+.stp-lbl { margin-top: 2px; font-size: 13px; font-weight: 700; line-height: 1.1; white-space: nowrap; opacity: .85; }
 .stp:is(:hover, :focus-visible) .stp-dot { transform: translateY(-2px); border-color: var(--cyan); }
 .stp:focus-visible { outline: none; }
 .stp:focus-visible .stp-dot { outline: 3px solid #FFFFFF; outline-offset: 2px; }
-/* current station: cyan ring, a little larger, full-strength label */
-.stp.here .stp-dot { border-color: var(--cyan); transform: scale(1.12); box-shadow: 0 0 0 4px rgba(102,209,227,.3); }
+/* current station: cyan ring only (same size – it must not grow over its label), full-strength cyan label */
+.stp.here .stp-dot { border-color: var(--cyan); }
+.stp.here:is(:hover, :focus-visible) .stp-dot { transform: none; }
 .stp.here .stp-lbl { opacity: 1; color: var(--cyan); }
 /* completed: green ring, ✓ badge and the coins earned */
 .stp.done .stp-dot { border-color: #6BBF4E; }
