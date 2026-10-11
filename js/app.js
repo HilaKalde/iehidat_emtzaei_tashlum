@@ -171,15 +171,36 @@
   // play button: "PLAY.png" from the assets folder (178×143, shown at half size so it stays sharp)
   const PLAY_ICON = `<img src="${UI}play.png" alt="">`;
 
+  /* boost screen – built like the interest-rate unit's: no title, the text straight on the wall above the TV,
+     Adam and Aya leaning in from the frame edges, and the TV as a player: a dark veil, PLAY on top, PAUSE on
+     hover while a film runs. There is no film yet (s.film) – PLAY then says so inside the TV. */
   R.boost = s => `
     <img class="bg" src="${IMG}bg-tv3.jpg" alt="">
-    <div class="boost-title ${A("fly-t", 0)}">${s.title}</div>
-    ${tvPair()}
-    <div class="tv ${A("fade", 500)}" data-tv>
-      <button type="button" class="tv-play" data-play-slot aria-label="הפעלת הסרטון">${PLAY_ICON}</button>
-    </div>
-    <div class="card boost-card ${A("fly-b", 700)}"><p class="txt">${s.text}</p></div>
-    <div class="video-blank" data-blank hidden><p class="video-note">סרטון יתווסף בהמשך</p></div>`;
+    <div class="boost-shade" aria-hidden="true"></div>
+    <p class="boost-text ${A("fade", 200)}">${s.text}</p>
+    <img class="char boost-peek left ${A("fly-l", 300)}" src="${IMG}boost-adam-peek.webp" alt="">
+    <img class="char boost-peek right ${A("fly-r", 400)}" src="${IMG}boost-aya-peek.webp" alt="">
+    <div class="tv boost-tv film-box ${A("fade", 500)}" data-film>
+      ${s.film ? `<video class="tv-video" src="${VID + s.film}" playsinline preload="metadata" tabindex="-1"></video>` : ""}
+      <div class="tv-veil" aria-hidden="true"></div>
+      <p class="tv-soon" data-soon hidden>סרטון יתווסף בהמשך</p>
+      <button type="button" class="tv-btn play" aria-label="הפעלת הסרטון" title="הפעלת הסרטון"><img src="${UI}play.png" alt=""></button>
+      <button type="button" class="tv-btn pause" aria-label="עצירת הסרטון" title="עצירת הסרטון"><img src="${UI}pause.png" alt=""></button>
+    </div>`;
+  function bindBoost(scr, s) {
+    const box = $("[data-film]", scr), v = $("video.tv-video", box);
+    const playBtn = $(".tv-btn.play", box), pauseBtn = $(".tv-btn.pause", box);
+    if (!v) {                                    // no film yet: PLAY shows the placeholder line inside the TV
+      playBtn.addEventListener("click", () => { $("[data-soon]", box).hidden = false; playBtn.hidden = true; });
+      return;
+    }
+    const playing = on => box.classList.toggle("playing", on);
+    playBtn.addEventListener("click", () => { v.muted = !state.sound; v.play().catch(() => {}); });
+    pauseBtn.addEventListener("click", () => v.pause());
+    v.addEventListener("play", () => playing(true));
+    v.addEventListener("pause", () => playing(false));
+    v.addEventListener("ended", () => { v.currentTime = 0; playing(false); });
+  }
 
   R.videoSlot = s => {
     const v = VIDEOS[s.video];
@@ -981,7 +1002,7 @@
     </div>
     <p class="adv-outro ${A("fade", 1000)}">${s.outro}</p>`;
 
-  const BIND = { station: bindStation, weights: bindWeights, pull: bindPull, tennis: bindTennis, mcq: bindMcq, explore: bindExplore, ad: bindAd };
+  const BIND = { boost: bindBoost, station: bindStation, weights: bindWeights, pull: bindPull, tennis: bindTennis, mcq: bindMcq, explore: bindExplore, ad: bindAd };
 
   /* ------------------------------------------------------------ building */
   const screensEl = $("#screens");

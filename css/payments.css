@@ -16,6 +16,34 @@
 .boost-title { left: 319px; top: 138px; width: 568px; }
 .boost-card { left: 319px; top: 528px; width: 568px; padding: 14px 26px; }
 .char.peek { z-index: 3; }
+
+/* ---------- boost screen (slide 4) – same look as the interest-rate unit ---------- */
+/* text straight on the wall above the TV – no card; a soft veil behind it keeps white text readable under the spotlights */
+.boost-shade {
+  left: 0; top: 92px; width: 1200px; height: 112px; pointer-events: none;
+  background: linear-gradient(180deg, rgba(7,22,30,0) 0, rgba(7,22,30,.22) 28px, rgba(7,22,30,.22) 88px, rgba(7,22,30,0) 100%);
+}
+.boost-text { left: 230px; top: 124px; width: 740px; text-align: center; color: #FFFFFF; font-size: 19px; line-height: 1.35; text-shadow: 0 2px 8px rgba(0,0,0,.5); }
+/* Aya and Adam lean in from the frame edges, behind the navigation buttons */
+.boost-peek { pointer-events: none; z-index: 3; }
+.boost-peek.left  { left: -107px; top: 145px; width: 439px; height: 658px; }
+.boost-peek.right { left: 949px; top: 185px; width: 360px; height: 540px; }
+/* the TV as a player: the film fills it, a black veil covers it, PLAY sits on the veil; PAUSE shows on hover while playing */
+.tv.boost-tv { left: 319px; top: 196px; width: 571px; height: 320px; }
+.film-box .tv-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #000; }
+.film-box .tv-veil { position: absolute; inset: 0; background: rgba(0,0,0,.6); transition: opacity 220ms ease; }
+.film-box .tv-btn {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
+  width: 100px; height: 80px; padding: 0; border: 0; background: none; cursor: pointer;
+  filter: drop-shadow(0 4px 5px rgba(0,0,0,.3)); transition: transform 180ms ease, filter 180ms ease, opacity 180ms ease;
+}
+.film-box .tv-btn img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.film-box .tv-btn:hover, .film-box .tv-btn:focus-visible { transform: translate(-50%,-50%) translateY(-2px); filter: drop-shadow(0 6px 8px rgba(0,0,0,.28)); }
+.film-box .tv-btn:active { transform: translate(-50%,-50%) translateY(1px); filter: drop-shadow(0 2px 4px rgba(0,0,0,.3)); }
+.film-box:not(.playing) .tv-btn.pause, .film-box.playing .tv-btn.play { display: none; }
+.film-box.playing .tv-veil, .film-box.playing .tv-btn.pause { opacity: 0; }
+.film-box.playing:hover .tv-btn.pause, .film-box.playing .tv-btn.pause:focus-visible { opacity: 1; }
+.film-box .tv-soon { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #FFFFFF; font-size: 26px; font-weight: 800; }
 .tv iframe { width: 100%; height: 100%; border: 0; display: block; background: #000; }
 .tv-play { border: 0; background: none; padding: 0; cursor: pointer; transition: transform .18s; }
 .tv-play img { display: block; width: 89px; height: 72px; filter: drop-shadow(0 4px 6px rgba(0,0,0,.4)); }
