@@ -215,6 +215,7 @@
 
   /* explore: buttons that open layers; "הבא" appears only after every layer was opened */
   const visited = s => (state.visited[s.id] || []);
+  const byStationHero = hero => DATA.screens.find(x => x.type === "station" && x.hero === hero);
   const allVisited = s => s.items.every(it => visited(s).includes(it.key));
   function exploreLayer(s, it) {
     if (s.layout === "fraud") return `
@@ -237,11 +238,21 @@
         </div>
         ${it.examples ? `<div class="pl-ex"><b>דוגמאות:</b>${it.examples.map(e => `<span class="ex-coin ${e.cls}"><i>${e.sym}</i>${e.name}</span>`).join("")}</div>` : ""}
       </div>`;
+    // payment methods: Adam trains at that method's crossfit station beside the text (the GIF loads when the layer opens)
+    const st = it.athlete && byStationHero(it.athlete);
     return `
-      <div class="modal card ex-modal" role="dialog" aria-label="${it.label}">
+      <div class="modal card ex-modal ${st ? "has-athlete" : ""}" role="dialog" aria-label="${it.label}">
         <button class="close-x" data-close="1" aria-label="סגירה">${CLOSE_X}</button>
-        <div class="exm-head"><img src="${ICON + it.icon}" alt=""><div class="h-title">${it.label}</div></div>
-        ${it.body.map(p => `<p class="exm-p">${p}</p>`).join("")}
+        <div class="exm-grid">
+          <div>
+            <div class="exm-head"><img src="${ICON + it.icon}" alt=""><div class="h-title">${it.label}</div></div>
+            ${it.body.map(p => `<p class="exm-p">${p}</p>`).join("")}
+          </div>
+          ${st ? `<figure class="exm-athlete">
+            <img data-gif="${it.athlete}" alt="אדם מתאמן בתחנה – ${st.reps}">
+            <figcaption>תחנה ${st.num} · ${st.title.replace(/^.*\|\s*/, "")}</figcaption>
+          </figure>` : ""}
+        </div>
       </div>`;
   }
   R.explore = s => {
@@ -280,6 +291,8 @@
   function bindExplore(scr, s) {
     $$("[data-item]", scr).forEach(b => b.addEventListener("click", () => {
       const key = b.dataset.item;
+      const g = $(`[data-layer="it-${key}"] img[data-gif]`, scr);
+      if (g && !g.getAttribute("src")) g.src = IMG + g.dataset.gif + ".gif";   // the athlete's GIF loads with its layer
       const v = visited(s);
       if (!v.includes(key)) { state.visited[s.id] = v.concat(key); save(); }
       b.classList.add("seen");
