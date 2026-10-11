@@ -17,6 +17,19 @@
 .boost-card { left: 319px; top: 528px; width: 568px; padding: 14px 26px; }
 .char.peek { z-index: 3; }
 
+/* ---------- "דלגו לתרגול" – same button as the interest-rate unit, beside "הבא" in the bottom-left corner ---------- */
+.skip-practice {
+  left: 72px; top: 627px; width: 123px; height: 40px;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 0 10px; border: 0; border-radius: 8px; cursor: pointer;
+  background: linear-gradient(90deg, #3FBDD4 -16%, var(--navy) 100%);   /* white text ≥ 3:1 even at the cyan end */
+  color: #FFFFFF; font-family: inherit; font-size: 15.2px; font-weight: 700; line-height: 1; white-space: nowrap;
+  box-shadow: var(--btn-shadow); transition: transform 180ms ease, box-shadow 180ms ease;
+}
+.skip-practice .ic { width: 12px; height: 13.6px; flex: none; display: block; }
+.skip-practice:is(:hover, :focus-visible) { transform: translateY(-2px); box-shadow: var(--btn-shadow-hover); animation: btn-float 1.4s ease-in-out 180ms infinite alternate; }
+.skip-practice:active { animation: none; transform: translateY(1px); box-shadow: var(--btn-shadow-active); }
+
 /* ---------- boost screen (slide 4) – same look as the interest-rate unit ---------- */
 /* text straight on the wall above the TV – no card; a soft veil behind it keeps white text readable under the spotlights */
 .boost-shade {

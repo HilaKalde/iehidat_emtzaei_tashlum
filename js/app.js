@@ -1113,7 +1113,14 @@
     <div class="coin-counter hidden" data-c="coins"><span class="coin"></span><span data-c="coins-v">0</span><span class="lbl">מטבעות</span></div>
     <button type="button" class="nav-btn next-btn hidden" data-c="next" aria-label="הבא" title="הבא"><img src="${UI}nav-arrow.png" alt=""></button>
     <button type="button" class="nav-btn prev-btn hidden" data-c="prev" aria-label="הקודם" title="הקודם"><img src="${UI}nav-arrow.png" alt=""></button>
-    <button class="btn-img sound-btn" data-c="sound" title="סאונד"><img alt="סאונד"></button>`;
+    <button class="btn-img sound-btn" data-c="sound" title="סאונד"><img alt="סאונד"></button>
+    <button type="button" class="skip-practice hidden" data-c="skip" title="דילוג לתרגול">
+      <span>דלגו לתרגול</span>
+      <svg class="ic" viewBox="0 0 15 17" aria-hidden="true" focusable="false">
+        <path d="M1.7 1.7 10 8.5 1.7 15.3Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="3.2" stroke-linejoin="round"></path>
+        <rect x="12" y="0" width="3" height="17" rx="1.5" fill="#FFFFFF"></rect>
+      </svg>
+    </button>`;
   const C = k => $(`[data-c="${k}"]`, chrome);
   const soundImg = () => { $("img", C("sound")).src = UI + (state.sound ? "sound-on.png" : "sound-off.png"); };
   soundImg();
@@ -1123,6 +1130,7 @@
     toast(state.sound ? "הסאונד הופעל (הקריינות תתווסף בהמשך)" : "הסאונד הושתק");
   });
   C("home").addEventListener("click", () => goTo("menu"));
+  C("skip").addEventListener("click", () => { const to = C("skip").dataset.go; if (to) goTo(to); });
   C("next").addEventListener("click", () => current && current.next && goTo(current.next));
   C("prev").addEventListener("click", () => current && current.prev && goTo(current.prev));
 
@@ -1140,6 +1148,11 @@
     const cc = C("coins");
     cc.classList.toggle("hidden", !showCoins);
     cc.classList.toggle("on-card", s.type === "weights");   // the calculator button takes the top-left slot there
+    // "דלגו לתרגול" (as in the interest-rate unit): only on a set's screens before its exercises (data: skip),
+    // jumping to the first exercise. It stands beside the "הבא" button, in the bottom-left corner.
+    const sk = C("skip"), to = s.skip && byId[s.skip] ? s.skip : "";
+    sk.classList.toggle("hidden", !to);
+    sk.dataset.go = to;
     if (showCoins) {
       const v = setScore(s.set), el = C("coins-v");
       if (+el.textContent !== v) bumpEl(cc);
