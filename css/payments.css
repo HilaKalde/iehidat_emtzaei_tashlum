@@ -2,6 +2,20 @@
    יחידת אמצעי תשלום – רכיבים ייעודיים (נטען אחרי style.css, שמבוסס על יחידת ריבית)
    ===================================================================================== */
 [hidden] { display: none !important; }
+
+/* ---------- cover: above everything (chrome included); PLAY closes it and starts slide 1 ---------- */
+#cover { position: absolute; left: 0; top: 0; width: 1200px; height: 675px; z-index: 80; background: var(--navy); }
+#cover.gone { display: none; }
+#cover > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.cover-play {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: 118px; height: 118px; padding: 0; border: 0; background: none; cursor: pointer;
+  border-radius: 50%;        /* a keyboard focus ring follows the circle */
+  transition: transform 180ms ease, filter 180ms ease;
+}
+.cover-play svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 6px 14px rgba(0,0,0,.45)); }
+.cover-play:is(:hover, :focus-visible) { transform: translate(-50%,-50%) translateY(-3px); }
+.cover-play:active { transform: translate(-50%,-50%) translateY(1px); }
 .q-scrim.light { background: linear-gradient(to left, rgba(7,22,30,.35) 0%, rgba(7,22,30,.35) 60%, rgba(7,22,30,.08) 100%); }
 .q-scrim.strong { background: rgba(7,22,30,.55); }
 

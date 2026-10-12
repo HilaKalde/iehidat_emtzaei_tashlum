@@ -1260,4 +1260,16 @@
 
   const start = (location.hash || "").slice(1);
   goTo(byId[start] ? start : "intro");
+
+  /* the cover (as in the interest-rate unit): PLAY closes it and opens the first screen. A deep link to any
+     other screen (the review dropdown, a shared link) skips it, so reviewing single screens is not blocked.
+     While it is up, the lomda behind it is inert, so Tab cannot slip past it. */
+  const cover = $("#cover"), coverBtn = $(".cover-play", cover);
+  const firstScreen = DATA.screens[0].id;
+  const behind = [$("#screens"), $("#chrome")];
+  const dropCover = () => { cover.classList.add("gone"); behind.forEach(e => e.removeAttribute("inert")); };
+  if (byId[start] && start !== firstScreen) dropCover();
+  else behind.forEach(e => e.setAttribute("inert", ""));
+  coverBtn.addEventListener("click", () => { dropCover(); goTo(firstScreen); });
+  sel.addEventListener("change", dropCover);                 // jumping from the review list also lifts it
 })();
