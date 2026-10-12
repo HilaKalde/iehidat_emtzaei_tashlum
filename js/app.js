@@ -740,9 +740,9 @@
   };
   function bindPull(scr, s) {
     const btns = $$("[data-pull]", scr), fb = $("[data-inline-fb]", scr), heroImg = $("[data-hero]", scr), hint = $("[data-hint]", scr);
-    /* Adam starts standing in the machine; a correct answer makes him pull with the arm on the side of the button
-       that was clicked: the right-hand button (בטוח) → his LEFT arm (on the screen's right), the left-hand button
-       (חשוד) → his RIGHT arm. A wrong answer leaves him standing still. */
+    /* Adam starts standing in the machine; whichever handle is clicked – right or wrong answer – he pulls with the
+       arm on that side: the right-hand button (בטוח) → his LEFT arm (on the screen's right), the left-hand button
+       (חשוד) → his RIGHT arm. (Client's choice for this set; elsewhere characters move only on a correct answer.) */
     const PULL_GIF = { right: "adam-pull-his-left", left: "adam-pull-his-right" };
     const sideOf = key => $(`[data-pull="${key}"]`, scr).classList.contains("right") ? "right" : "left";
     const call = $("[data-call]", scr);
@@ -762,8 +762,9 @@
         else if (b.dataset.pull === s.correct) b.classList.add("should");
       });
       hint.hidden = true;
-      if (ok) playGif(heroImg, PULL_GIF[sideOf(key)]);
-      const head = ok ? "זיהיתם נכון!<br>אדם משלים את המשיכה." : "הכיוון הפעם לא היה נכון.<br>אדם נעצר באמצע המשיכה.";
+      playGif(heroImg, PULL_GIF[sideOf(key)]);
+      // he now pulls on a wrong answer too, so "אדם נעצר באמצע המשיכה" no longer describes what is seen
+      const head = ok ? "זיהיתם נכון!<br>אדם משלים את המשיכה." : "הכיוון הפעם לא היה נכון.";
       const fill = () => showFb(fb, ok, fbHtml(ok, head, s.explain, ok ? s.coins : 0), animate);
       if (animate) setTimeout(fill, ok ? 900 : 700); else fill();
     };
