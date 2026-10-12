@@ -110,6 +110,7 @@ const DATA = {
     {
       id: "menu", scene: "פתיחה", name: "האימון – סטים", type: "menu",
       title: "האימון - סטים",
+      pillTitle: "אימון אמצעי תשלום",       // the orange tag right of the menu panel (as in the interest-rate unit)
       text: "לפניכם 4 סטים של אימונים דינמיים, בכל פעם נתאמן בסגנון אחר ונאמן את השרירים הפיננסיים שלנו!",
       instruction: "לחצו על כל אחד מהמכשירים כדי להיכנס לסט",
       // img: transparent machine PNG over "רקע ללא מכשירים", at the spot the machine stands in "רקע ראשי" [left, top, width, height]

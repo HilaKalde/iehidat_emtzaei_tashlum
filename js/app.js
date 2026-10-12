@@ -66,7 +66,7 @@
   /* character images: natural size of each PNG, so any height keeps the ratio */
   const NAT = { "adam": [512, 768], "aya": [512, 768], "adam-hips": [512, 768], "aya-hips": [512, 768],
     "adam-flex": [512, 768], "aya-flex": [512, 768], "aya-adam-like": [512, 768], "adam-sit": [614, 614], "aya-sit": [614, 614],
-    "adam-cross": [644, 804], "aya-bench": [688, 752] };
+    "adam-cross": [644, 804], "adam-cross-stand": [644, 804], "aya-bench": [688, 752] };
   function hero(name, l, t, h, cls = "", alt = "") {
     const [nw, nh] = NAT[name];
     return `<img class="char ${cls}" data-hero="${name}" src="${IMG + name}.png" alt="${alt}" style="${pos(l, t, Math.round(h * nw / nh), h)}">`;
@@ -146,6 +146,8 @@
         <p class="txt">${s.text}</p>
         <p class="instr">${s.instruction}</p>
       </div>
+      <div class="intro-title on-menu ${A("fly-r", 150)}"><img src="${UI}title-pill.png" alt=""><span>${s.pillTitle}</span></div>
+      <div class="boi-logo ${A("fly-t", 100)}"><img src="${UI}logo-boi.png" alt="בנק ישראל"></div>
       ${machines}
       ${door}
       <img class="char menu-char ${A("fade", 500)}" src="${IMG}adam-sit.png" alt="" style="${pos(280, 326, 345, 345)}">
@@ -322,7 +324,7 @@
     const heroes = {
       "adam-hips": hero("adam-hips", 20, 190, 470, A("fly-l", 300)),
       "aya-hips": hero("aya-hips", 20, 186, 474, A("fly-l", 300)),
-      "adam-cross": hero("adam-cross", 18, 205, 450, A("fly-l", 300))
+      "adam-cross": hero("adam-cross-stand", 18, 205, 450, A("fly-l", 300))
     };
     return `
       <img class="bg" src="${IMG}${tennis ? "bg-tennis.jpg" : "bg-clean.jpg"}" alt="">
@@ -723,7 +725,7 @@
     return `
       <img class="bg" src="${IMG}bg-clean.jpg" alt="">
       <div class="q-scrim light" aria-hidden="true"></div>
-      <img class="char ${first ? A("fly-l", 150) : ""}" data-hero="adam-cross" src="${IMG}adam-cross.png" alt="אדם במכשיר הקרוס אובר, אוחז בשתי הידיות" style="${pos(...CROSS)}">
+      <img class="char ${first ? A("fly-l", 150) : ""}" data-hero="adam-cross" src="${IMG}adam-cross-stand.png" alt="אדם עומד במכשיר הקרוס אובר, ידיו על מותניו" style="${pos(...CROSS)}">
       <div class="handles ${first ? A("fade", 500) : ""}">${handle("suspect", "חשוד", "left")}${handle("safe", "בטוח", "right")}</div>
       <div class="card pull-card ${first ? A("fly-b", 0) : ""}">
         <div class="pc-text">
@@ -738,7 +740,11 @@
   };
   function bindPull(scr, s) {
     const btns = $$("[data-pull]", scr), fb = $("[data-inline-fb]", scr), heroImg = $("[data-hero]", scr), hint = $("[data-hint]", scr);
-    gifUrl("adam-cross.gif");
+    /* Adam starts standing in the machine; a correct answer makes him pull with the arm on the side of the button
+       that was clicked: the right-hand button (בטוח) → his LEFT arm (on the screen's right), the left-hand button
+       (חשוד) → his RIGHT arm. A wrong answer leaves him standing still. */
+    const PULL_GIF = { right: "adam-pull-his-left", left: "adam-pull-his-right" };
+    const sideOf = key => $(`[data-pull="${key}"]`, scr).classList.contains("right") ? "right" : "left";
     const call = $("[data-call]", scr);
     if (call) {
       const pick = () => { $("[data-transcript]", call).hidden = false; $("[data-call-btns]", call).hidden = true; $("[data-call-state]", call).textContent = "שיחה פעילה"; call.classList.add("live"); };
@@ -756,7 +762,7 @@
         else if (b.dataset.pull === s.correct) b.classList.add("should");
       });
       hint.hidden = true;
-      if (ok) playGif(heroImg, "adam-cross");
+      if (ok) playGif(heroImg, PULL_GIF[sideOf(key)]);
       const head = ok ? "זיהיתם נכון!<br>אדם משלים את המשיכה." : "הכיוון הפעם לא היה נכון.<br>אדם נעצר באמצע המשיכה.";
       const fill = () => showFb(fb, ok, fbHtml(ok, head, s.explain, ok ? s.coins : 0), animate);
       if (animate) setTimeout(fill, ok ? 900 : 700); else fill();
@@ -1147,6 +1153,7 @@
     <button type="button" class="nav-btn next-btn hidden" data-c="next" aria-label="הבא" title="הבא"><img src="${UI}nav-arrow.png" alt=""></button>
     <button type="button" class="nav-btn prev-btn hidden" data-c="prev" aria-label="הקודם" title="הקודם"><img src="${UI}nav-arrow.png" alt=""></button>
     <button class="btn-img sound-btn" data-c="sound" title="סאונד"><img alt="סאונד"></button>
+    <div class="boi-mark hidden" data-c="boi"><img src="${UI}logo-boi.png" alt="בנק ישראל"></div>
     <button type="button" class="skip-practice hidden" data-c="skip" title="דילוג לתרגול">
       <span>דלגו לתרגול</span>
       <svg class="ic" viewBox="0 0 15 17" aria-hidden="true" focusable="false">
@@ -1183,6 +1190,8 @@
     cc.classList.toggle("on-card", s.type === "weights");   // the calculator button takes the top-left slot there
     // "דלגו לתרגול" (as in the interest-rate unit): only on a set's screens before its exercises (data: skip),
     // jumping to the first exercise. It stands beside the "הבא" button, in the bottom-left corner.
+    // the small Bank of Israel mark rides along on every screen; the menu has the big one already
+    C("boi").classList.toggle("hidden", s.type === "menu");
     const sk = C("skip"), to = s.skip && byId[s.skip] ? s.skip : "";
     sk.classList.toggle("hidden", !to);
     sk.dataset.go = to;

@@ -8,7 +8,25 @@
 /* ---------- menu: the tennis court behind the open door ---------- */
 .door-hit { z-index: 2; cursor: pointer; transition: backdrop-filter .2s, background .2s; }
 .door-hit.hover { backdrop-filter: brightness(1.45) saturate(1.15); background: rgba(255,255,255,.06); }
-.menu-panel { left: 265px; width: 670px; }
+.menu-panel { left: 245px; width: 670px; }
+/* orange tag right of the menu panel, with the unit's name (the interest-rate unit's .intro-title.on-menu) */
+.intro-title.on-menu { left: 899px; top: 14px; width: 280px; height: 76px; z-index: 6; }
+.intro-title.on-menu span { left: 19px; top: 21px; width: 229px; height: 30px; font-size: 17pt; }   /* a longer name than "אימון ריבית" – smaller type so it fits the pill */
+/* Bank of Israel logo: on the menu a white card hanging from the top edge, left of the menu panel */
+.boi-logo {
+  left: 74px; top: 0; width: 96px; height: 92px; z-index: 4;
+  display: flex; align-items: center; justify-content: center; padding: 2px 5px 4px;
+  background: rgba(255,255,255,.97); border-radius: 0 0 24px 24px; box-shadow: 0 8px 20px rgba(0,0,0,.22);
+}
+.boi-logo img { width: 86px; height: 86px; object-fit: contain; display: block; }
+/* the same mark, small, on every other screen – right edge, just under the chapter tag, on a white disc */
+.boi-mark {
+  right: 14px; top: 100px; width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,.9); border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,.25);
+}
+.boi-mark img { width: 38px; height: 38px; object-fit: contain; display: block; }
+.sum-card:not(.narrow) { width: 752px; }   /* ends at x 1132 – clear of the small logo (x 1142–1186) */
 
 /* ---------- TV screens ---------- */
 /* the TV of "רקע חדש לסרטון" (x 444–1236, y 272–714 of 1672×941) */
