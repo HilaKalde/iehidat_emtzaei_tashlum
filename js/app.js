@@ -83,7 +83,9 @@
       return (gifUrls[file] = URL.createObjectURL(b));
     });
   }
-  const playGif = (img, base) => gifUrl(base + ".gif").then(u => { if (img && img.isConnected) img.src = u; });
+  // the character animations are animated WebP (full colour + soft alpha edges; GIF's 256 colours showed banding)
+  const ANIM = ".webp", ANIM_TYPE = "image/webp";
+  const playGif = (img, base) => gifUrl(base + ANIM).then(u => { if (img && img.isConnected) img.src = u; });
   const showStill = (img, base) => { if (img) img.src = IMG + base + ".png"; };
 
   // drawn ✕ – the font's "×" glyph sits off-centre inside the round close button
@@ -291,7 +293,7 @@
     $$("[data-item]", scr).forEach(b => b.addEventListener("click", () => {
       const key = b.dataset.item;
       const g = $(`[data-layer="it-${key}"] img[data-gif]`, scr);
-      if (g && !g.getAttribute("src")) g.src = IMG + g.dataset.gif + ".gif";   // the athlete's GIF loads with its layer
+      if (g && !g.getAttribute("src")) g.src = IMG + g.dataset.gif + ANIM;   // the athlete's animation loads with its layer
       const v = visited(s);
       if (!v.includes(key)) { state.visited[s.id] = v.concat(key); save(); }
       b.classList.add("seen");
@@ -407,7 +409,7 @@
   function bindStation(scr, s) {
     const rows = $$("[data-row]", scr), btn = $("[data-check]", scr), heroImg = $("[data-hero]", scr);
     const reps = $("[data-reps]", scr), fbWrap = $("[data-stfb]", scr), fb = $("[data-inline-fb]", scr), reopen = $("[data-reopen]", scr);
-    gifUrl(s.hero + ".gif");                                    // warm the GIF
+    gifUrl(s.hero + ANIM);                                      // warm the animation
     const a0 = ans(s.id);
     const picks = a0 && a0.picks ? a0.picks.slice() : Array(s.rows.length).fill(null);
     const nextBtn = isLast(s) ? "לסיכום הסט" : "לתחנה הבאה";
@@ -491,10 +493,10 @@
     if (typeof ImageDecoder === "undefined") return false;
     let dec, cv;
     try {
-      gifUrl(base + ".gif");                                   // makes sure the blob is being fetched
-      const blob = await gifBlobs[base + ".gif"];
+      gifUrl(base + ANIM);                                     // makes sure the blob is being fetched
+      const blob = await gifBlobs[base + ANIM];
       if (!blob || !img.isConnected) return false;
-      dec = new ImageDecoder({ data: await blob.arrayBuffer(), type: "image/gif" });
+      dec = new ImageDecoder({ data: await blob.arrayBuffer(), type: ANIM_TYPE });
       await dec.tracks.ready;
       const frames = dec.tracks.selectedTrack.frameCount;
       cv = document.createElement("canvas");
@@ -601,7 +603,7 @@
     const inRate = $("[data-in=rate]", scr), inPrice = $("[data-in=price]", scr), inputs = [inRate, inPrice].filter(Boolean);
     const opts = $$("[data-opt]", scr);
     let sel = null;
-    gifUrl("aya-bench.gif");
+    gifUrl("aya-bench" + ANIM);
     const lift = () => playGif(heroImg, "aya-bench");
     const finalFb = (ok, coins) => fbHtml(ok, ok ? s.fbCorrect : s.fbWrong, s.explain, ok ? coins : 0);
     const lockAll = () => { inputs.forEach(i => (i.disabled = true)); opts.forEach(o => (o.disabled = true)); btn.disabled = true; };
@@ -968,7 +970,7 @@
     const fbFor = ok => `<div class="ifb-row"><p class="ifb-head">${ok ? s.fbCorrect : s.fbWrong}</p><span class="ifb-coins"><span class="coin sm"></span>יש לכם ${bank()} ₪ בקופה</span></div><div class="ifb-body">${money(s.explain)}</div>`;
     // Aya / Adam stand still and stretch only after a correct answer
     const heroImg = $("[data-hero]", scr), train = () => playGif(heroImg, heroImg.dataset.hero);
-    gifUrl(heroImg.dataset.hero + ".gif");
+    gifUrl(heroImg.dataset.hero + ANIM);
     const a = ans(s.id);
     if (a && a.completed) { showFinal(a.answer); showFb(fb, a.correct, fbFor(a.correct), false); if (a.correct) train(); }
     opts.forEach(o => o.addEventListener("click", () => {
