@@ -58,7 +58,7 @@
   color: #FFFFFF; font-family: inherit; font-size: 15.2px; font-weight: 700; line-height: 1; white-space: nowrap;
   box-shadow: var(--btn-shadow); transition: transform 180ms ease, box-shadow 180ms ease;
 }
-.skip-practice .ic { width: 12px; height: 13.6px; flex: none; display: block; }
+.skip-practice .ic { width: 12px; height: 13.6px; flex: none; display: block; transform: scaleX(-1); }   /* mirrored: the arrow points the way the lomda moves (left) */
 .skip-practice:is(:hover, :focus-visible) { transform: translateY(-2px); box-shadow: var(--btn-shadow-hover); animation: btn-float 1.4s ease-in-out 180ms infinite alternate; }
 .skip-practice:active { animation: none; transform: translateY(1px); box-shadow: var(--btn-shadow-active); }
 
