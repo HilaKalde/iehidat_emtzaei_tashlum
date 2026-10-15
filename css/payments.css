@@ -391,7 +391,7 @@
 .ph-body { flex: 1; padding: 14px 10px; display: flex; flex-direction: column; align-items: flex-start; }
 .bubble { position: relative; max-width: 92%; background: #FFFFFF; border-radius: 4px 16px 16px 16px; padding: 10px 12px 18px; font-size: 15px; line-height: 1.4; box-shadow: 0 1px 2px rgba(0,0,0,.15); }
 .bubble .b-time { position: absolute; left: 10px; bottom: 3px; font-size: 10.5px; color: #8A979F; }
-.m-link { color: #1A62C4; text-decoration: underline; word-break: break-all; }
+.m-link { color: #1A62C4; text-decoration: underline; text-decoration-color: #1A62C4; }
 .ph-input { margin: 8px; height: 34px; border-radius: 17px; background: #FFFFFF; color: #9AA5AC; font-size: 13px; display: flex; align-items: center; padding: 0 14px; }
 .phone.whatsapp { background: #E9DFD4; }
 .phone.whatsapp .ph-head { background: #075E54; color: #FFFFFF; border: 0; }

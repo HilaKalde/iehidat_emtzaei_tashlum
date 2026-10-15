@@ -688,7 +688,7 @@
   /* ------------------------------------------------- safe pull (crossover) */
   const CROSS = [60, 190, 376, 470];
   function mockHtml(m) {
-    const link = m.link ? `<span class="m-link" dir="ltr">${m.link}</span>` : "";
+    const link = m.link ? `<span class="m-link">${m.link}</span>` : "";
     if (m.kind === "sms" || m.kind === "whatsapp") return `
       <div class="phone ${m.kind}">
         <div class="ph-bar"><span dir="ltr">${m.time}</span><span>▮▮▮ 🔋</span></div>
