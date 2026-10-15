@@ -194,8 +194,12 @@
   function bindBoost(scr, s) {
     const box = $("[data-film]", scr), v = $("video.tv-video", box);
     const playBtn = $(".tv-btn.play", box), pauseBtn = $(".tv-btn.pause", box);
-    if (s.yt) {                                  // a YouTube film: PLAY puts the player in the TV (its own controls pause it)
-      playBtn.addEventListener("click", () => { box.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${s.yt}?autoplay=1&rel=0&modestbranding=1&playsinline=1" title="סרטון בוסט אנרגיה" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`; });
+    if (s.yt) {                                  // a YouTube film: PLAY opens it full screen (its own controls pause it; Esc returns it to the TV)
+      playBtn.addEventListener("click", () => {
+        box.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${s.yt}?autoplay=1&rel=0&modestbranding=1&playsinline=1" title="סרטון בוסט אנרגיה" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+        const f = box.firstElementChild;                   // still inside the click, so the browser allows full screen
+        (f.requestFullscreen || f.webkitRequestFullscreen || (() => {})).call(f)?.catch?.(() => {});
+      });
       return;
     }
     if (!v) {                                    // no film yet: PLAY shows the placeholder line inside the TV
