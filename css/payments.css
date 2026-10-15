@@ -33,14 +33,11 @@
   background: rgba(255,255,255,.97); border-radius: 0 0 24px 24px; box-shadow: 0 8px 20px rgba(0,0,0,.22);
 }
 .boi-logo img { width: 86px; height: 86px; object-fit: contain; display: block; }
-/* the same mark, small, on every other screen – a white disc in the top-right corner, right of the chapter tag's star */
-.boi-mark {
-  right: 3px; top: 3px; width: 48px; height: 48px; z-index: 6;
-  display: flex; align-items: center; justify-content: center;
-  background: rgba(255,255,255,.9); border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,.25);
-}
-.boi-mark img { width: 42px; height: 42px; object-fit: contain; display: block; }
-.chapter-tag { right: 50px; }   /* moved left so its star stays clear of the logo disc */
+/* the same mark, small, on every other screen – as in the interest-rate unit: a white disc cut by the stage's top-right corner,
+   the logo sitting in its visible lower-left part */
+.boi-mark { right: -18px; top: -17px; width: 68px; height: 68px; z-index: 6; background: rgba(255,255,255,.9); border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,.25); }
+.boi-mark img { position: absolute; left: 5.2px; top: 18.2px; width: 43.7px; height: 43.7px; object-fit: contain; display: block; }
+.chapter-tag { right: 53px; }   /* moved left so its star stays clear of the logo disc */
 
 /* ---------- TV screens ---------- */
 /* the TV of "רקע חדש לסרטון" (x 444–1236, y 272–714 of 1672×941) */
