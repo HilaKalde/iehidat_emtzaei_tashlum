@@ -414,6 +414,7 @@
 .br-bar .dots { display: flex; gap: 4px; }
 .br-bar .dots i { width: 9px; height: 9px; border-radius: 50%; background: #B8C2C8; }
 .br-bar .url { flex: 1; background: #FFFFFF; border-radius: 10px; padding: 3px 8px; font-size: 11.5px; color: #33424B; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; }
+.br-bar .url-blur { filter: blur(3.5px); user-select: none; }   /* the address is blurred – the learner judges by the other signs */
 .br-nav { display: flex; justify-content: space-between; align-items: center; background: #123A5A; color: #FFFFFF; padding: 8px 12px; }
 .br-nav .logo { font-weight: 800; font-size: 15px; }
 .br-nav .nav-l { font-size: 11px; opacity: .8; }

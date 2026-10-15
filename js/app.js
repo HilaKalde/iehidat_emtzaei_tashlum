@@ -692,7 +692,7 @@
     if (m.kind === "sms" || m.kind === "whatsapp") return `
       <div class="phone ${m.kind}">
         <div class="ph-bar"><span dir="ltr">${m.time}</span><span>▮▮▮ 🔋</span></div>
-        <div class="ph-head"><span class="avatar">${m.kind === "whatsapp" ? "👤" : "✉"}</span><span class="who" dir="auto">${m.from}</span></div>
+        <div class="ph-head"><span class="avatar">${m.kind === "whatsapp" ? "👤" : "✉"}</span><span class="who" dir="${/^[+\d]/.test(m.from) ? "ltr" : "auto"}">${m.from}</span></div>
         <div class="ph-body"><div class="bubble">${m.text}${link ? "<br>" + link : ""}<span class="b-time" dir="ltr">${m.time}</span></div></div>
         <div class="ph-input">${m.kind === "whatsapp" ? "הקלידו הודעה" : "הודעת טקסט"}</div>
       </div>`;
@@ -707,7 +707,7 @@
       </div>`;
     if (m.kind === "web") return `
       <div class="browser">
-        <div class="br-bar"><span class="dots"><i></i><i></i><i></i></span><span class="url" dir="ltr">🔒 ${m.url}</span></div>
+        <div class="br-bar"><span class="dots"><i></i><i></i><i></i></span><span class="url" dir="ltr">🔒 <span class="url-blur" aria-hidden="true">${m.url}</span></span></div>
         <div class="br-page">
           <div class="br-nav"><span class="logo">🏦 ${m.brand}</span><span class="nav-l">פרטיים · עסקים · הלוואות</span></div>
           <div class="br-hero"><b>${m.head}</b><p>${m.text}</p></div>
@@ -717,7 +717,7 @@
     if (m.kind === "mail") return `
       <div class="mail">
         <div class="ml-top"><b>${m.subject}</b></div>
-        <div class="ml-from"><span class="avatar">${m.from.charAt(0)}</span><span><b>${m.from}</b><br><span class="addr" dir="ltr">&lt;${m.addr}&gt;</span></span></div>
+        <div class="ml-from"><span class="avatar">${m.from.charAt(0)}</span><span><b>${m.from}</b>${m.addr ? `<br><span class="addr" dir="ltr">&lt;${m.addr}&gt;</span>` : ""}</span></div>
         <div class="ml-body">${m.lines.map(l => `<p>${l}</p>`).join("")}</div>
         ${m.attach ? `<div class="ml-att"><span class="att-ic">📎</span><span dir="ltr">${m.attach}</span></div>` : ""}
       </div>`;
