@@ -191,15 +191,17 @@
       <button type="button" class="tv-btn play" aria-label="הפעלת הסרטון" title="הפעלת הסרטון"><img src="${UI}play.png" alt=""></button>
       <button type="button" class="tv-btn pause" aria-label="עצירת הסרטון" title="עצירת הסרטון"><img src="${UI}pause.png" alt=""></button>
     </div>`;
+  // a YouTube film in a TV box, opened full screen – called from the PLAY click, so the browser allows it (Esc returns it to the TV)
+  function playYouTube(box, id, title) {
+    box.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1&playsinline=1" title="${title}" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+    const f = box.firstElementChild;
+    (f.requestFullscreen || f.webkitRequestFullscreen || (() => {})).call(f)?.catch?.(() => {});
+  }
   function bindBoost(scr, s) {
     const box = $("[data-film]", scr), v = $("video.tv-video", box);
     const playBtn = $(".tv-btn.play", box), pauseBtn = $(".tv-btn.pause", box);
-    if (s.yt) {                                  // a YouTube film: PLAY opens it full screen (its own controls pause it; Esc returns it to the TV)
-      playBtn.addEventListener("click", () => {
-        box.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${s.yt}?autoplay=1&rel=0&modestbranding=1&playsinline=1" title="סרטון בוסט אנרגיה" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
-        const f = box.firstElementChild;                   // still inside the click, so the browser allows full screen
-        (f.requestFullscreen || f.webkitRequestFullscreen || (() => {})).call(f)?.catch?.(() => {});
-      });
+    if (s.yt) {                                  // a YouTube film: PLAY opens it full screen (its own controls pause it)
+      playBtn.addEventListener("click", () => playYouTube(box, s.yt, "סרטון בוסט אנרגיה"));
       return;
     }
     if (!v) {                                    // no film yet: PLAY shows the placeholder line inside the TV
@@ -1100,13 +1102,10 @@
         const L = e.target.closest(".layer"); if (L) { hideLayer(L); if (scr._onLayerClose) scr._onLayerClose(); }
         return;
       }
-      // ▶ on a video screen: the finished film plays inside the TV; a slot without a film shows the black placeholder
-      const embed = (id, title) => {
-        $("[data-tv]", scr).innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1&playsinline=1" title="${title}" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
-      };
+      // ▶ on a video screen: the finished film opens full screen; a slot without a film shows the black placeholder
       if (e.target.closest("[data-play-slot]")) {
         const v = VIDEOS[s.video];
-        if (v && v.yt) embed(v.yt, v.title); else $("[data-blank]", scr).hidden = false;
+        if (v && v.yt) playYouTube($("[data-tv]", scr), v.yt, v.title); else $("[data-blank]", scr).hidden = false;
         return;
       }
     });
