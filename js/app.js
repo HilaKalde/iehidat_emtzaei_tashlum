@@ -960,7 +960,7 @@
       <img class="bg" src="${IMG}bg-clean.jpg" alt="">
       <div class="q-scrim" aria-hidden="true"></div>
       <img class="char ${first ? A("fly-l", 150) : ""}" data-hero="${g.file}" src="${IMG + g.file}.png" alt="" style="${pos(...g.box)}">
-      <div class="bank ${first ? A("fly-t", 100) : ""}" data-bank><span class="coin"></span><span class="t">יש לכם:</span><span class="v" data-bank-v>${bank()}</span></div>
+      <div class="bank ${first ? A("fly-t", 100) : ""}" data-bank title="מטבעות בקופה"><span class="coin"></span><span class="v" data-bank-v>${bank()}</span></div>
       <div class="q-wall${s.wide ? " wide-opts" : ""}">
         ${s.story ? `<p class="qw-story">${s.story}</p>` : ""}
         <p class="qw-question">${s.question}</p>
