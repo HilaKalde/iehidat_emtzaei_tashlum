@@ -33,14 +33,14 @@
   background: rgba(255,255,255,.97); border-radius: 0 0 24px 24px; box-shadow: 0 8px 20px rgba(0,0,0,.22);
 }
 .boi-logo img { width: 86px; height: 86px; object-fit: contain; display: block; }
-/* the same mark, small, on every other screen – right edge, just under the chapter tag, on a white disc */
+/* the same mark, small, on every other screen – a white disc in the top-right corner, right of the chapter tag's star */
 .boi-mark {
-  right: 14px; top: 100px; width: 44px; height: 44px;
+  right: 3px; top: 3px; width: 48px; height: 48px; z-index: 6;
   display: flex; align-items: center; justify-content: center;
   background: rgba(255,255,255,.9); border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,.25);
 }
-.boi-mark img { width: 38px; height: 38px; object-fit: contain; display: block; }
-.sum-card:not(.narrow) { width: 752px; }   /* ends at x 1132 – clear of the small logo (x 1142–1186) */
+.boi-mark img { width: 42px; height: 42px; object-fit: contain; display: block; }
+.chapter-tag { right: 50px; }   /* moved left so its star stays clear of the logo disc */
 
 /* ---------- TV screens ---------- */
 /* the TV of "רקע חדש לסרטון" (x 444–1236, y 272–714 of 1672×941) */
