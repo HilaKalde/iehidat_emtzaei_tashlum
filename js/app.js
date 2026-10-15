@@ -177,7 +177,7 @@
 
   /* boost screen – built like the interest-rate unit's: no title, the text straight on the wall above the TV,
      Adam and Aya leaning in from the frame edges, and the TV as a player: a dark veil, PLAY on top, PAUSE on
-     hover while a film runs. There is no film yet (s.film) – PLAY then says so inside the TV. */
+     hover while a film runs. The film is a YouTube id (s.yt) or a local file (s.film); with neither, PLAY says "soon". */
   R.boost = s => `
     <img class="bg" src="${IMG}bg-tv3.jpg" alt="">
     <div class="boost-shade" aria-hidden="true"></div>
@@ -194,6 +194,10 @@
   function bindBoost(scr, s) {
     const box = $("[data-film]", scr), v = $("video.tv-video", box);
     const playBtn = $(".tv-btn.play", box), pauseBtn = $(".tv-btn.pause", box);
+    if (s.yt) {                                  // a YouTube film: PLAY puts the player in the TV (its own controls pause it)
+      playBtn.addEventListener("click", () => { box.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${s.yt}?autoplay=1&rel=0&modestbranding=1&playsinline=1" title="סרטון בוסט אנרגיה" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`; });
+      return;
+    }
     if (!v) {                                    // no film yet: PLAY shows the placeholder line inside the TV
       playBtn.addEventListener("click", () => { $("[data-soon]", box).hidden = false; playBtn.hidden = true; });
       return;
