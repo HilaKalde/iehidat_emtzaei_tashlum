@@ -977,7 +977,7 @@
       o.disabled = true;
       if (i === s.correct) o.classList.add("ok"); else if (i === chosen) o.classList.add("bad");
     });
-    const fbFor = ok => `<div class="ifb-row"><p class="ifb-head">${ok ? s.fbCorrect : s.fbWrong}</p><span class="ifb-coins"><span class="coin sm"></span>יש לכם ${bank()} ₪ בקופה</span></div><div class="ifb-body">${money(s.explain)}</div>`;
+    const fbFor = ok => `<div class="ifb-row"><p class="ifb-head">${ok ? s.fbCorrect : s.fbWrong}</p><span class="ifb-coins"><span class="coin sm"></span>נשארו ${bank()} מטבעות</span></div><div class="ifb-body">${money(s.explain)}</div>`;
     // Aya / Adam stand still and stretch only after a correct answer
     const heroImg = $("[data-hero]", scr), train = () => playGif(heroImg, heroImg.dataset.hero);
     gifUrl(heroImg.dataset.hero + ANIM);
