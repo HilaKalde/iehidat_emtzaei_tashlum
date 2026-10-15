@@ -531,3 +531,6 @@
 #review button { white-space: nowrap; }
 #notes ol { padding-right: 18px; margin: 6px 0 0; }
 #notes li { margin-bottom: 6px; }
+
+/* stretch counter: coin + number only – a little more room after the number (its left end) */
+.bank { padding-left: 22px; }
