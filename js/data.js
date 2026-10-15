@@ -8,7 +8,8 @@ const LINKS = {
   exchange: "https://www.boi.org.il/roles/markets/exchangerates/",
   boostVideo: "https://youtu.be/aaJcGN7946A",
   scamsGuide: "https://www.boi.org.il/information/bank-paymnts/financial-education/campaigns/digital_scams_guide/",
-  pod5: "", pod32: "", pod24: "", pod6: ""      // ⚠ קישורי הפודקאסטים לא הופיעו בתסריט – להשלים
+  pod32: "https://www.youtube.com/watch?v=j9Wo63sIugc",
+  pod5: "", pod24: "", pod6: ""      // ⚠ קישורי שאר הפודקאסטים לא הופיעו בתסריט – להשלים
 };
 
 const SETS = {
