@@ -191,23 +191,19 @@
       <button type="button" class="tv-btn play" aria-label="הפעלת הסרטון" title="הפעלת הסרטון"><img src="${UI}play.png" alt=""></button>
       <button type="button" class="tv-btn pause" aria-label="עצירת הסרטון" title="עצירת הסרטון"><img src="${UI}pause.png" alt=""></button>
     </div>`;
-  // a YouTube film in a TV box, opened full screen – called from the PLAY click, so the browser allows it (Esc returns it to the TV)
+  // a YouTube film, played inside the TV on the wall (its own controls – the learner can still choose full screen there)
   function playYouTube(box, id, title) {
     box.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1&playsinline=1" title="${title}" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
-    const f = box.firstElementChild;
-    (f.requestFullscreen || f.webkitRequestFullscreen || (() => {})).call(f)?.catch?.(() => {});
   }
   // the same for a film that ships with the lomda (assets/video) – a plain player with its own controls
   function playFile(box, file, title) {
     box.innerHTML = `<video class="tv-film" src="${VID + file}" title="${title}" controls autoplay playsinline></video>`;
-    const f = box.firstElementChild;
-    f.muted = !state.sound;
-    (f.requestFullscreen || f.webkitRequestFullscreen || (() => {})).call(f)?.catch?.(() => {});
+    box.firstElementChild.muted = !state.sound;
   }
   function bindBoost(scr, s) {
     const box = $("[data-film]", scr), v = $("video.tv-video", box);
     const playBtn = $(".tv-btn.play", box), pauseBtn = $(".tv-btn.pause", box);
-    if (s.yt) {                                  // a YouTube film: PLAY opens it full screen (its own controls pause it)
+    if (s.yt) {                                  // a YouTube film: PLAY puts the player in the TV (its own controls pause it)
       playBtn.addEventListener("click", () => playYouTube(box, s.yt, "סרטון בוסט אנרגיה"));
       return;
     }
@@ -1109,7 +1105,7 @@
         const L = e.target.closest(".layer"); if (L) { hideLayer(L); if (scr._onLayerClose) scr._onLayerClose(); }
         return;
       }
-      // ▶ on a video screen: the finished film opens full screen; a slot without a film shows the black placeholder
+      // ▶ on a video screen: the finished film plays inside the TV; a slot without a film shows the black placeholder
       if (e.target.closest("[data-play-slot]")) {
         const v = VIDEOS[s.video];
         if (v && v.file) playFile($("[data-tv]", scr), v.file, v.title);
