@@ -197,6 +197,13 @@
     const f = box.firstElementChild;
     (f.requestFullscreen || f.webkitRequestFullscreen || (() => {})).call(f)?.catch?.(() => {});
   }
+  // the same for a film that ships with the lomda (assets/video) – a plain player with its own controls
+  function playFile(box, file, title) {
+    box.innerHTML = `<video class="tv-film" src="${VID + file}" title="${title}" controls autoplay playsinline></video>`;
+    const f = box.firstElementChild;
+    f.muted = !state.sound;
+    (f.requestFullscreen || f.webkitRequestFullscreen || (() => {})).call(f)?.catch?.(() => {});
+  }
   function bindBoost(scr, s) {
     const box = $("[data-film]", scr), v = $("video.tv-video", box);
     const playBtn = $(".tv-btn.play", box), pauseBtn = $(".tv-btn.pause", box);
@@ -1105,7 +1112,8 @@
       // ▶ on a video screen: the finished film opens full screen; a slot without a film shows the black placeholder
       if (e.target.closest("[data-play-slot]")) {
         const v = VIDEOS[s.video];
-        if (v && v.yt) playYouTube($("[data-tv]", scr), v.yt, v.title); else $("[data-blank]", scr).hidden = false;
+        if (v && v.file) playFile($("[data-tv]", scr), v.file, v.title);
+        else if (v && v.yt) playYouTube($("[data-tv]", scr), v.yt, v.title); else $("[data-blank]", scr).hidden = false;
         return;
       }
     });
