@@ -941,7 +941,7 @@
       <p class="txt" style="margin-top:8px;font-size:19px">${s.lead}</p>
       <p class="h-sub" style="margin-top:10px;font-size:20px">איך זה יעבוד?</p>
       <p class="txt" style="font-size:18px">${s.how}</p>
-      <div class="chips" style="margin-top:6px">${s.topics.map(t => `<span>${t}</span>`).join("")}</div>
+      <div class="chips two" style="margin-top:6px">${s.topics.map(t => `<span>${t}</span>`).join("")}</div>
       <div style="display:flex;gap:10px;margin-top:12px">
         ${s.rules.map(r => `<div class="rule ${r.good ? "good" : "badr"}">${r.text}</div>`).join("")}
       </div>
@@ -1021,7 +1021,7 @@
       ${hero("aya-adam-like", 95, 150, 520, A("fly-l", 300), "איה ואדם מחייכים ועושים לייק")}
       <div class="card sum-card narrow ${A("fly-b", 0)}">
         <div class="h-title">${s.title}</div>
-        <div class="score-line ${A("pop", 500)}"><span class="coin"></span>נשארו לכם <span class="big">${b} ₪</span> מתוך 100 ₪ בקופה</div>
+        <div class="score-line ${A("pop", 500)}"><span class="coin"></span>נשארו לכם <span class="big">${b}</span> מתוך 100 מטבעות בקופה</div>
         <p class="h-sub" style="margin-top:8px">${band}</p>
         <p class="txt" style="font-size:18px;margin-top:6px">${s.learned}</p>
         <ul class="bul">${s.bullets.map(x => `<li>${x}</li>`).join("")}</ul>

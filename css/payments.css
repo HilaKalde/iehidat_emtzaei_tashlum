@@ -531,3 +531,6 @@
 
 /* stretch counter: coin + number only – a little more room after the number (its left end) */
 .bank { padding-left: 22px; }
+
+/* stretch intro: the four set names in two rows of two (as in the interest-rate unit) */
+.chips.two { display: grid; grid-template-columns: repeat(2, max-content); }
