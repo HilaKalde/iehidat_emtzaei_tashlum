@@ -37,50 +37,33 @@
     try { sfxNow.currentTime = 0; const p = sfxNow.play(); if (p) p.catch(() => {}); } catch (e) {}
   }
 
-  /* narration – one recording per slide (VO in data.js), cut into parts that play on their own events:
-     "enter" when the slide opens, a layer's part when it opens, the feedback part after an answer, and so on.
-     A part is a key of the slide's VO entry, or [file, from, to] (the tennis heads shared from slide 43).
-     The recordings are fetched whole (blob URLs), so seeking inside them works on any server. Opened from disk
-     (file://) the browser blocks fetch – there the file itself is played (seeking a local file works anyway). */
-  const voBlobs = {}; let voEl = null, voToken = 0;
-  const voUrl = file => {
-    const path = new URL(AUDIO + "vo/" + file, location.href).href;
-    if (location.protocol === "file:") return Promise.resolve(path);
-    return (voBlobs[file] = voBlobs[file] || fetch(path).then(r => r.blob()).then(b => URL.createObjectURL(b)).catch(() => path));
-  };
+  /* narration – every slide's recording is cut into small files, one per part (assets/audio/vo/NN-part.mp3, NN = slide
+     number; cut by _tools/vo-cut.js along the VO table in data.js). "enter" plays when the slide opens, a layer's part when
+     it opens, the feedback part after an answer, and so on. Each file plays from its start to its end – no seeking inside
+     a recording, which browsers do only roughly when an mp3 is read straight from disk.
+     A part is a key of the slide's VO entry, or { file } (a station situation, the tennis heads shared from slide 43). */
+  let voEl = null, voToken = 0;
+  const voFile = (id, key) => VO[id].file.slice(0, 2) + "-" + key.replace(/:/g, "-") + ".mp3";
   function stopVO() { voToken++; if (voEl) try { voEl.pause(); } catch (e) {} }
   async function playVO(id, keys, delay = 0) {
     stopVO();
-    const v = VO[id];
-    if (!state.sound || !v) return;
+    if (!state.sound || !VO[id]) return;
     const token = voToken;
-    const parts = keys.flatMap(k => Array.isArray(k) ? [k] : !v[k] ? [] : Array.isArray(v[k][0]) ? v[k].map(r => [v.file, ...r]) : [[v.file, ...v[k]]]);
+    const files = keys.map(k => typeof k === "object" ? k.file : VO[id][k] ? voFile(id, k) : null).filter(Boolean);
     if (delay) await new Promise(r => setTimeout(r, delay));
-    for (const [file, from, to] of parts) {
-      if (token !== voToken) return;
-      const url = await voUrl(file);
+    for (const file of files) {
       if (token !== voToken) return;
       if (!voEl) voEl = new Audio();
-      if (voEl.src !== url) { voEl.src = url; await new Promise(r => { voEl.onloadedmetadata = r; voEl.onerror = r; }); }
-      if (token !== voToken) return;
-      voEl.currentTime = from;
+      voEl.src = AUDIO + "vo/" + file;
       try { await voEl.play(); } catch (e) { return; }              // no click yet (autoplay blocked) – stay quiet
-      // stop exactly at the end of the part (timeupdate is too coarse – the next sentence would leak in):
-      // a timer set to the expected end, re-checked against the real playback position every frame
-      await new Promise(done => {
-        let timer = 0, finished = false;
-        const check = () => {
-          if (finished) return;
-          const cut = token !== voToken;
-          if (cut || to - voEl.currentTime <= 0.015 || voEl.ended) { finished = true; clearTimeout(timer); if (!cut) voEl.pause(); done(); }
-        };
-        const frame = () => { check(); if (!finished) requestAnimationFrame(frame); };
-        const wait = () => { check(); if (!finished) timer = setTimeout(wait, Math.max(10, Math.min(250, (to - voEl.currentTime) * 1000))); };
-        frame(); wait();
+      await new Promise(done => {                                    // until it ends – or stopVO pauses it
+        const end = () => { voEl.removeEventListener("ended", end); voEl.removeEventListener("pause", end); voEl.removeEventListener("error", end); done(); };
+        voEl.addEventListener("ended", end); voEl.addEventListener("pause", end); voEl.addEventListener("error", end);
       });
     }
   }
-  const voRow = (id, i) => [VO[id].file, ...VO[id].rows[i]];          // one station situation
+  const voRow = (id, i) => ({ file: VO[id].file.slice(0, 2) + "-row" + (i + 1) + ".mp3" });   // one station situation
+  const voShared = k => ({ file: VO._shared[k][0].slice(0, 2) + "-" + k + ".mp3" });
   // the narration of a slide as it opens
   function voEnter(s) {
     if (!$("#cover").classList.contains("gone")) return stopVO();     // not under the cover – it starts with its PLAY
@@ -973,12 +956,12 @@
       if (ok) {
         a.completed = true; a.correct = true; a.coins = ROUND_COINS[a.clue - 1]; setAns(s.id, a); updateChrome(s);
         reveal(); choice.hidden = true;
-        hit(() => { showFb(fb, true, endFb(true)); playVO(s.id, [VO._shared.okHead, "ok"]); }); return;
+        hit(() => { showFb(fb, true, endFb(true)); playVO(s.id, [voShared("okHead"), "ok"]); }); return;
       }
       a.wrong.push(sel);
       if (a.clue >= 3) {
         a.completed = true; a.correct = false; a.coins = 0; setAns(s.id, a); updateChrome(s);
-        reveal(); showFb(fb, false, endFb(false)); playVO(s.id, [VO._shared.lostHead, "lost"]); return;
+        reveal(); showFb(fb, false, endFb(false)); playVO(s.id, [voShared("lostHead"), "lost"]); return;
       }
       setAns(s.id, a);
       choice.hidden = true;

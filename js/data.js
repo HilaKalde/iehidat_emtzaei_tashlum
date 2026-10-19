@@ -827,11 +827,13 @@ const DATA = {
   ]
 };
 
-/* narration: one recording per slide (assets/audio/vo/NN.mp3, NN = slide number), cut into parts [from, to] in seconds.
+/* narration: one recording per slide (תיקיית נכסים/קריינות/N.mp3 = file NN, the slide number), cut into parts [from, to] in seconds.
    enter = when the slide opens; the other parts play on the matching event (layer opened, feedback, clue revealed …).
    A part can also be a list of ranges, played back to back (to skip a stretch of a recording).
    Stations: enter = the instruction, rows[i] = situation i+1 without its spoken number (read one by one as the learner answers).
-   The cut points were measured in the recordings (pauses + the phrases that repeat between slides). */
+   The cut points were measured in the recordings (pauses + the phrases that repeat between slides).
+   _tools/vo-cut.js cuts each part into its own file, assets/audio/vo/NN-part.mp3 (rows → NN-rowK, "layer:x" → NN-layer-x),
+   which is what the lomda plays – after changing a cut point here, run it again. */
 const VO = {
   "intro": { file: "01.mp3", enter: [0,16.26] },
   "menu": { file: "02.mp3", enter: [0.21,13.12] },
