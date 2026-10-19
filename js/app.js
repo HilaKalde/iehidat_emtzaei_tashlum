@@ -718,7 +718,8 @@
         if (a.fbOpen) { lockAll(); showFb(fb, false, retryHtml(), false); }
       }
     }
-    function retryHtml() { return `<div class="ifb-row"><p class="ifb-head">${s.kind === "choice" ? "התשובה אינה נכונה." : "אחד הנתונים או יותר אינו מדויק – השדה השגוי מסומן באדום."} נסו שוב.</p><button type="button" class="btn ifb-btn" data-retry>נסו שוב</button></div>`; }
+    // the first wrong try shows (and the narrator reads) the exercises own hint – fbWrong is written as a hint for another try
+    function retryHtml() { return `<div class="ifb-row"><p class="ifb-head">${money(s.fbWrong)}${s.kind === "choice" ? "" : ' <span class="ifb-note">השדה השגוי מסומן באדום.</span>'}</p><button type="button" class="btn ifb-btn" data-retry>נסו שוב</button></div>`; }
     scr._retry = () => {
       const cur = ans(s.id); if (cur) { cur.fbOpen = false; save(); }
       fb.hidden = true; fb.innerHTML = "";
@@ -749,11 +750,11 @@
       if (s.kind === "choice") markOpts(sel, final); else markInputs(res);
       lockAll();
       playFeedbackSound(ok);
-      if (!final) { showFb(fb, false, retryHtml()); return; }
+      if (!final) { showFb(fb, false, retryHtml()); playVO(s.id, ["bad"], 300); return; }
       collapse();
       if (ok) lift();
       setTimeout(() => showFb(fb, ok, finalFb(ok, s.coins)), ok ? 700 : 300);
-      playVO(s.id, [ok ? "ok" : "bad", "explain"], ok ? 700 : 300);
+      playVO(s.id, ok ? ["ok", "explain"] : ["explain"], ok ? 700 : 300);   // after a second wrong try the hint is no longer relevant – only the solution
     });
   }
 
