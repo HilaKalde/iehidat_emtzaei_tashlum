@@ -334,7 +334,7 @@
         <div class="h-title">${s.title}</div>
         <p class="txt ex-lead">${s.lead}</p>
         <div class="ex-grid">${s.items.map(btn).join("")}</div>
-        <p class="ex-progress ${allVisited(s) ? "done" : ""}" data-ex-progress ${allVisited(s) ? "" : "hidden"}>${progressText(s)}</p>
+        <p class="ex-progress ${allVisited(s) ? "done" : ""}" data-ex-progress ${allVisited(s) && !s.noDoneMsg ? "" : "hidden"}>${progressText(s)}</p>
         ${s.afterAll ? `<div class="ex-after" data-after ${allVisited(s) ? "" : "hidden"}><span class="ic-dark"><img src="${ICON + s.afterAll.icon}" alt=""></span><p>${s.afterAll.text}</p></div>` : ""}
         ${s.disclaimer ? `<p class="ex-disc">${s.disclaimer}</p>` : ""}
       </div>
@@ -371,7 +371,7 @@
       stopVO();
       if (allVisited(s) && !prog.classList.contains("done")) {
         playVO(s.id, ["all"]);                                // the closing line, once
-        prog.hidden = false;                                   // no "X מתוך 5" count – only the closing message
+        prog.hidden = !!s.noDoneMsg;                           // no "X מתוך 5" count – only the closing message (not on every screen)
         prog.classList.add("done", "a", "pop");
         // all the payment methods were opened – Adam gives a thumbs-up
         const h = $('[data-hero="adam"]', scr);
