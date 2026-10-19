@@ -861,7 +861,7 @@ const VO = {
   "s2-q8": { file: "24.mp3", enter: [0.05,34.12], ok: [34.12,39.06], bad: [39.06,43.47], explain: [43.47,70.33] },
   "s2-sum": { file: "25.mp3", enter: [0.03,38.07] },
   "s3-ad": { file: "26.mp3", enter: [0.09,10.47] },
-  "s3-stop": { file: "27.mp3", clicked: [0.04,15.04], skipped: [15.04,31.34], enter: [31.34,45.82] },
+  "s3-stop": { file: "27.mp3", clicked: [0.04,15.04], skipped: [15.04,31.34], enter: [32.82,45.82] },   // the recording has an extra "מתחילים את הסט" at 31.3–32.7 – left out; it is heard once, at the end
   "s3-video": { file: "28.mp3", enter: [0.19,2.85] },
   "s3-learn": { file: "29.mp3", enter: [0.04,13.06], "layer:phish": [13.06,47.98], "layer:imperson": [47.98,86.4], "layer:identity": [86.4,121.42], "layer:shop": [121.42,163.95], "layer:emotion": [163.95,196.63], all: [196.63,216.62] },
   "s3-howto": { file: "30.mp3", enter: [0.03,29.08] },
