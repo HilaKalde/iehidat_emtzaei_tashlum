@@ -830,6 +830,7 @@ const DATA = {
 /* narration: one recording per slide (assets/audio/vo/NN.mp3, NN = slide number), cut into parts [from, to] in seconds.
    enter = when the slide opens; the other parts play on the matching event (layer opened, feedback, clue revealed …).
    A part can also be a list of ranges, played back to back (to skip a stretch of a recording).
+   Stations: enter = the instruction, rows[i] = situation i+1 (read one by one as the learner answers).
    The cut points were measured in the recordings (pauses + the phrases that repeat between slides). */
 const VO = {
   "intro": { file: "01.mp3", enter: [0,16.26] },
@@ -839,11 +840,11 @@ const VO = {
   "s1-video": { file: "05.mp3", enter: [0.08,2.2] },
   "s1-learn": { file: "06.mp3", enter: [0.48,9.09], "layer:cash": [9.09,27.38], "layer:cards": [27.38,49.43], "layer:apps": [49.43,58.84], "layer:transfer": [58.84,96.25], "layer:wallet": [96.25,104.51], all: [104.51,108.23] },
   "s1-howto": { file: "07.mp3", enter: [[0.27,27.15],[29.08,32.17]] },   // "אדם ישלים חזרה" is read twice in the recording – the second time (27.55–29.00) is skipped
-  "s1-st1": { file: "08.mp3", enter: [0.15,26.66], full: [26.66,33.55], part: [33.55,37.81], explain: [37.81,55.4] },
-  "s1-st2": { file: "09.mp3", enter: [0.02,37.98], full: [37.98,44.44], part: [44.44,48.38], explain: [48.38,62.34] },
-  "s1-st3": { file: "10.mp3", enter: [0.36,28.2], full: [28.2,34.55], part: [34.55,38.39], explain: [38.39,49.38] },
-  "s1-st4": { file: "11.mp3", enter: [0.13,41.53], full: [41.53,47.85], part: [47.85,51.62], explain: [51.62,75.52] },
-  "s1-st5": { file: "12.mp3", enter: [0,35.77], full: [35.77,42.8], part: [42.8,50.8], explain: [50.8,63.45] },
+  "s1-st1": { file: "08.mp3", enter: [0.15,8.4], rows: [[8.4,10.99],[10.99,13.72],[13.72,17.57],[17.57,20.36],[20.36,23.54],[23.54,26.66]], full: [26.66,33.55], part: [33.55,37.81], explain: [37.81,55.4] },
+  "s1-st2": { file: "09.mp3", enter: [0.02,9.5], rows: [[9.5,14.13],[14.13,18.53],[18.53,23.37],[23.37,28.25],[28.25,32.3],[32.3,37.98]], full: [37.98,44.44], part: [44.44,48.38], explain: [48.38,62.34] },
+  "s1-st3": { file: "10.mp3", enter: [0.36,10.27], rows: [[10.27,14.4],[14.4,18.68],[18.68,22.68],[22.68,28.2]], full: [28.2,34.55], part: [34.55,38.39], explain: [38.39,49.38] },
+  "s1-st4": { file: "11.mp3", enter: [0.13,8.97], rows: [[8.97,17.8],[17.8,24.83],[24.83,30.48],[30.48,38.1],[38.1,41.53]], full: [41.53,47.85], part: [47.85,51.62], explain: [51.62,75.52] },
+  "s1-st5": { file: "12.mp3", enter: [0,10.16], rows: [[10.16,15.43],[15.43,21.7],[21.7,27.93],[27.93,35.77]], full: [35.77,42.8], part: [42.8,50.8], explain: [50.8,63.45] },
   "s1-sum": { file: "13.mp3", enter: [0,49.07] },
   "s2-video": { file: "14.mp3", enter: [0.05,2.8] },
   "s2-howto": { file: "15.mp3", enter: [0.05,38.95] },

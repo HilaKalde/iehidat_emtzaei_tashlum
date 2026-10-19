@@ -80,12 +80,17 @@
       });
     }
   }
+  const voRow = (id, i) => [VO[id].file, ...VO[id].rows[i]];          // one station situation
   // the narration of a slide as it opens
   function voEnter(s) {
     if (!$("#cover").classList.contains("gone")) return stopVO();     // not under the cover – it starts with its PLAY
     if (s.type === "menu" && !firstVisit) return stopVO();            // the menu is narrated on the first visit only
     if (s.type === "stop") return playVO(s.id, [state.ad === "skipped" ? "skipped" : "clicked", "enter"]);
     if (s.type === "stretchEnd") return playVO(s.id, bank() < 50 ? ["enter", "band", "rest"] : ["enter", "rest"]);
+    if (s.type === "station") {                                      // the instruction, then the first situation still open
+      const a = ans(s.id), picks = (a && a.picks) || [], i = a && a.completed ? -1 : s.rows.findIndex((r, k) => picks[k] == null);
+      return playVO(s.id, i < 0 ? ["enter"] : ["enter", voRow(s.id, i)]);
+    }
     if (s.type === "tennis") { const a = ans(s.id); return a && a.completed ? stopVO() : playVO(s.id, ["clue" + ((a && a.clue) || 1)]); }
     playVO(s.id, ["enter"]);
   }
@@ -515,6 +520,10 @@
       picks[+o.dataset.r] = +o.dataset.o;
       paint(); reveal();
       setAns(s.id, { picks: picks.slice(), completed: false });
+      // the narrator moves on: the next situation still open (after this one, else from the top) – or falls silent
+      const r = +o.dataset.r, open = k => picks[k] == null;
+      let next = s.rows.findIndex((x, k) => k > r && open(k)); if (next < 0) next = s.rows.findIndex((x, k) => open(k));
+      if (next >= 0) playVO(s.id, [voRow(s.id, next)]); else stopVO();
     }));
     fbWrap.addEventListener("click", e => {
       if (e.target.closest("[data-hidefb]")) { fbWrap.hidden = true; reopen.hidden = false; const a = ans(s.id); a.fbOpen = false; save(); reopen.focus(); }
