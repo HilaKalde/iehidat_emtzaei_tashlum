@@ -37,6 +37,54 @@
     try { sfxNow.currentTime = 0; const p = sfxNow.play(); if (p) p.catch(() => {}); } catch (e) {}
   }
 
+  /* narration – one recording per slide (VO in data.js), cut into parts that play on their own events:
+     "enter" when the slide opens, a layer's part when it opens, the feedback part after an answer, and so on.
+     A part is a key of the slide's VO entry, or [file, from, to] (the tennis heads shared from slide 43).
+     The recordings are fetched whole (blob URLs), so seeking inside them works on any server. */
+  const voBlobs = {}; let voEl = null, voToken = 0;
+  const voUrl = file => (voBlobs[file] = voBlobs[file] || fetch(AUDIO + "vo/" + file).then(r => r.blob()).then(b => URL.createObjectURL(b)));
+  function stopVO() { voToken++; if (voEl) try { voEl.pause(); } catch (e) {} }
+  async function playVO(id, keys, delay = 0) {
+    stopVO();
+    const v = VO[id];
+    if (!state.sound || !v) return;
+    const token = voToken;
+    const parts = keys.map(k => Array.isArray(k) ? k : v[k] && [v.file, ...v[k]]).filter(Boolean);
+    if (delay) await new Promise(r => setTimeout(r, delay));
+    for (const [file, from, to] of parts) {
+      if (token !== voToken) return;
+      const url = await voUrl(file);
+      if (token !== voToken) return;
+      if (!voEl) voEl = new Audio();
+      if (voEl.src !== url) { voEl.src = url; await new Promise(r => { voEl.onloadedmetadata = r; voEl.onerror = r; }); }
+      if (token !== voToken) return;
+      voEl.currentTime = from;
+      try { await voEl.play(); } catch (e) { return; }              // no click yet (autoplay blocked) – stay quiet
+      // stop exactly at the end of the part (timeupdate is too coarse – the next sentence would leak in):
+      // a timer set to the expected end, re-checked against the real playback position every frame
+      await new Promise(done => {
+        let timer = 0, finished = false;
+        const check = () => {
+          if (finished) return;
+          const cut = token !== voToken;
+          if (cut || to - voEl.currentTime <= 0.015 || voEl.ended) { finished = true; clearTimeout(timer); if (!cut) voEl.pause(); done(); }
+        };
+        const frame = () => { check(); if (!finished) requestAnimationFrame(frame); };
+        const wait = () => { check(); if (!finished) timer = setTimeout(wait, Math.max(10, Math.min(250, (to - voEl.currentTime) * 1000))); };
+        frame(); wait();
+      });
+    }
+  }
+  // the narration of a slide as it opens
+  function voEnter(s) {
+    if (!$("#cover").classList.contains("gone")) return stopVO();     // not under the cover – it starts with its PLAY
+    if (s.type === "menu" && !firstVisit) return stopVO();            // the menu is narrated on the first visit only
+    if (s.type === "stop") return playVO(s.id, [state.ad === "skipped" ? "skipped" : "clicked", "enter"]);
+    if (s.type === "stretchEnd") return playVO(s.id, bank() < 50 ? ["enter", "band", "rest"] : ["enter", "rest"]);
+    if (s.type === "tennis") { const a = ans(s.id); return a && a.completed ? stopVO() : playVO(s.id, ["clue" + ((a && a.clue) || 1)]); }
+    playVO(s.id, ["enter"]);
+  }
+
   /* -------------------------------------------------------------- helpers */
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
@@ -193,10 +241,12 @@
     </div>`;
   // a YouTube film, played inside the TV on the wall (its own controls – the learner can still choose full screen there)
   function playYouTube(box, id, title) {
+    stopVO();
     box.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1&playsinline=1" title="${title}" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
   }
   // the same for a film that ships with the lomda (assets/video) – a plain player with its own controls
   function playFile(box, file, title) {
+    stopVO();
     box.innerHTML = `<video class="tv-film" src="${VID + file}" title="${title}" controls autoplay playsinline></video>`;
     box.firstElementChild.muted = !state.sound;
   }
@@ -212,7 +262,7 @@
       return;
     }
     const playing = on => box.classList.toggle("playing", on);
-    playBtn.addEventListener("click", () => { v.muted = !state.sound; v.play().catch(() => {}); });
+    playBtn.addEventListener("click", () => { stopVO(); v.muted = !state.sound; v.play().catch(() => {}); });
     pauseBtn.addEventListener("click", () => v.pause());
     v.addEventListener("play", () => playing(true));
     v.addEventListener("pause", () => playing(false));
@@ -311,6 +361,7 @@
       if (!v.includes(key)) { state.visited[s.id] = v.concat(key); save(); }
       b.classList.add("seen");
       showLayer(scr, "it-" + key);
+      playVO(s.id, ["layer:" + key]);
     }));
     $$("[data-info]", scr).forEach(b => b.addEventListener("click", () => {
       const box = $("[data-info-box]", b.closest(".modal"));
@@ -320,7 +371,9 @@
     scr._onLayerClose = () => {
       const prog = $("[data-ex-progress]", scr);
       prog.textContent = progressText(s);
+      stopVO();
       if (allVisited(s) && !prog.classList.contains("done")) {
+        playVO(s.id, ["all"]);                                // the closing line, once
         prog.hidden = false;                                   // no "X מתוך 5" count – only the closing message
         prog.classList.add("done", "a", "pop");
         // all the payment methods were opened – Adam gives a thumbs-up
@@ -496,6 +549,7 @@
       }
       playFeedbackSound(n === s.rows.length);
       setTimeout(() => { if (scr.classList.contains("active")) openFb(true); }, 900);
+      playVO(s.id, [n === s.rows.length ? "full" : "part", "explain"], 900);
     });
   }
   /* exact repetitions: the GIF is decoded here (WebCodecs ImageDecoder) and its frames are drawn on a canvas laid
@@ -685,6 +739,7 @@
       collapse();
       if (ok) lift();
       setTimeout(() => showFb(fb, ok, finalFb(ok, s.coins)), ok ? 700 : 300);
+      playVO(s.id, [ok ? "ok" : "bad", "explain"], ok ? 700 : 300);
     });
   }
 
@@ -793,6 +848,7 @@
       playFeedbackSound(ok);
       if (!ok) { b.classList.remove("shake"); void b.offsetWidth; b.classList.add("shake"); }
       finish(key, true);
+      playVO(s.id, [ok ? "ok" : "bad", "explain"], ok ? 900 : 700);
     }));
   }
 
@@ -884,11 +940,12 @@
     if (a.completed) { reveal(); showFb(fb, a.correct, endFb(a.correct), false); }
     know.addEventListener("click", () => {
       actions.hidden = true; choice.hidden = false; fb.hidden = true;
+      playVO(s.id, ["ask"]);
       opts.forEach(o => { o.disabled = a.wrong.includes(o.dataset.p); o.classList.toggle("bad", a.wrong.includes(o.dataset.p)); });
       sel = null; check.disabled = true; opts.forEach(o => o.classList.remove("sel"));
       const f = opts.find(o => !o.disabled); if (f) f.focus();
     });
-    more.addEventListener("click", () => { if (a.clue < 3 && !busy) hit(() => { a.clue++; save(); showClues(); }); });
+    more.addEventListener("click", () => { if (a.clue < 3 && !busy) hit(() => { a.clue++; save(); showClues(); playVO(s.id, ["clue" + a.clue]); }); });
     opts.forEach(o => o.addEventListener("click", () => {
       if (o.disabled) return;
       sel = o.dataset.p; opts.forEach(x => x.classList.toggle("sel", x === o)); check.disabled = false;
@@ -901,16 +958,17 @@
       if (ok) {
         a.completed = true; a.correct = true; a.coins = ROUND_COINS[a.clue - 1]; setAns(s.id, a); updateChrome(s);
         reveal(); choice.hidden = true;
-        hit(() => showFb(fb, true, endFb(true))); return;
+        hit(() => { showFb(fb, true, endFb(true)); playVO(s.id, [VO._shared.okHead, "ok"]); }); return;
       }
       a.wrong.push(sel);
       if (a.clue >= 3) {
         a.completed = true; a.correct = false; a.coins = 0; setAns(s.id, a); updateChrome(s);
-        reveal(); showFb(fb, false, endFb(false)); return;
+        reveal(); showFb(fb, false, endFb(false)); playVO(s.id, [VO._shared.lostHead, "lost"]); return;
       }
       setAns(s.id, a);
       choice.hidden = true;
       showFb(fb, false, `<div class="ifb-row"><p class="ifb-head">הכדור חזר למגרש.</p></div><div class="ifb-body">ממשיכים לחבטה הבאה ומקבלים רמז נוסף.</div>`);
+      playVO(s.id, ["again", "clue" + (a.clue + 1)]);                     // then straight on to the next clue
       // wrong: Aya stays still – after the short feedback the next clue simply appears (no hitting animation)
       setTimeout(() => { if (!scr.classList.contains("active")) return; a.clue++; save(); fb.hidden = true; actions.hidden = false; showClues(); }, 2200);
     });
@@ -994,6 +1052,7 @@
       if (ok) train();
       if (!ok) coinsOut(scr);
       setTimeout(() => showFb(fb, ok, fbFor(ok)), ok ? 500 : 1300);
+      playVO(s.id, [ok ? "ok" : "bad", "explain"], ok ? 500 : 1300);
     }));
   }
   function coinsOut(scr) {
@@ -1180,8 +1239,8 @@
   soundImg();
   C("sound").addEventListener("click", () => {
     state.sound = !state.sound; save(); soundImg();
-    if (!state.sound) stopFeedbackSound();
-    toast(state.sound ? "הסאונד הופעל (הקריינות תתווסף בהמשך)" : "הסאונד הושתק");
+    if (!state.sound) { stopFeedbackSound(); stopVO(); }
+    toast(state.sound ? "הסאונד הופעל" : "הסאונד הושתק");
   });
   C("home").addEventListener("click", () => goTo("menu"));
   C("skip").addEventListener("click", () => { const to = C("skip").dataset.go; if (to) goTo(to); });
@@ -1234,6 +1293,7 @@
     fresh.classList.add("active");
     current = s;
     updateChrome(s);
+    voEnter(s);
     requestAnimationFrame(() => fixOrphans(fresh));
     try { history.replaceState(null, "", "#" + s.id); } catch (e) {}
     reviewSync();
