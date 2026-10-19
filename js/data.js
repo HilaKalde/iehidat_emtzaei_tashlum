@@ -829,6 +829,7 @@ const DATA = {
 
 /* narration: one recording per slide (assets/audio/vo/NN.mp3, NN = slide number), cut into parts [from, to] in seconds.
    enter = when the slide opens; the other parts play on the matching event (layer opened, feedback, clue revealed …).
+   A part can also be a list of ranges, played back to back (to skip a stretch of a recording).
    The cut points were measured in the recordings (pauses + the phrases that repeat between slides). */
 const VO = {
   "intro": { file: "01.mp3", enter: [0,16.26] },
@@ -837,7 +838,7 @@ const VO = {
   "s1-boost": { file: "04.mp3", enter: [0.23,10.57] },
   "s1-video": { file: "05.mp3", enter: [0.08,2.2] },
   "s1-learn": { file: "06.mp3", enter: [0.48,9.09], "layer:cash": [9.09,27.38], "layer:cards": [27.38,49.43], "layer:apps": [49.43,58.84], "layer:transfer": [58.84,96.25], "layer:wallet": [96.25,104.51], all: [104.51,108.23] },
-  "s1-howto": { file: "07.mp3", enter: [0.27,32.17] },
+  "s1-howto": { file: "07.mp3", enter: [[0.27,27.15],[29.08,32.17]] },   // "אדם ישלים חזרה" is read twice in the recording – the second time (27.55–29.00) is skipped
   "s1-st1": { file: "08.mp3", enter: [0.15,26.66], full: [26.66,33.55], part: [33.55,37.81], explain: [37.81,55.4] },
   "s1-st2": { file: "09.mp3", enter: [0.02,37.98], full: [37.98,44.44], part: [44.44,48.38], explain: [48.38,62.34] },
   "s1-st3": { file: "10.mp3", enter: [0.36,28.2], full: [28.2,34.55], part: [34.55,38.39], explain: [38.39,49.38] },

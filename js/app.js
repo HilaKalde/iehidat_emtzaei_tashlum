@@ -54,7 +54,7 @@
     const v = VO[id];
     if (!state.sound || !v) return;
     const token = voToken;
-    const parts = keys.map(k => Array.isArray(k) ? k : v[k] && [v.file, ...v[k]]).filter(Boolean);
+    const parts = keys.flatMap(k => Array.isArray(k) ? [k] : !v[k] ? [] : Array.isArray(v[k][0]) ? v[k].map(r => [v.file, ...r]) : [[v.file, ...v[k]]]);
     if (delay) await new Promise(r => setTimeout(r, delay));
     for (const [file, from, to] of parts) {
       if (token !== voToken) return;
