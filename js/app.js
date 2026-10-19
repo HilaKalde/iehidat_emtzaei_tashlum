@@ -40,9 +40,14 @@
   /* narration – one recording per slide (VO in data.js), cut into parts that play on their own events:
      "enter" when the slide opens, a layer's part when it opens, the feedback part after an answer, and so on.
      A part is a key of the slide's VO entry, or [file, from, to] (the tennis heads shared from slide 43).
-     The recordings are fetched whole (blob URLs), so seeking inside them works on any server. */
+     The recordings are fetched whole (blob URLs), so seeking inside them works on any server. Opened from disk
+     (file://) the browser blocks fetch – there the file itself is played (seeking a local file works anyway). */
   const voBlobs = {}; let voEl = null, voToken = 0;
-  const voUrl = file => (voBlobs[file] = voBlobs[file] || fetch(AUDIO + "vo/" + file).then(r => r.blob()).then(b => URL.createObjectURL(b)));
+  const voUrl = file => {
+    const path = new URL(AUDIO + "vo/" + file, location.href).href;
+    if (location.protocol === "file:") return Promise.resolve(path);
+    return (voBlobs[file] = voBlobs[file] || fetch(path).then(r => r.blob()).then(b => URL.createObjectURL(b)).catch(() => path));
+  };
   function stopVO() { voToken++; if (voEl) try { voEl.pause(); } catch (e) {} }
   async function playVO(id, keys, delay = 0) {
     stopVO();
@@ -1342,7 +1347,12 @@
   const firstScreen = DATA.screens[0].id;
   const behind = [$("#screens"), $("#chrome")];
   const dropCover = () => { cover.classList.add("gone"); behind.forEach(e => e.removeAttribute("inert")); };
-  if (byId[start] && start !== firstScreen) dropCover();
+  if (byId[start] && start !== firstScreen) {
+    dropCover();
+    // opened straight on a slide: browsers allow sound only after a click, so the first click / key starts its narration
+    const kick = () => { removeEventListener("pointerdown", kick, true); removeEventListener("keydown", kick, true); if (current) voEnter(current); };
+    addEventListener("pointerdown", kick, true); addEventListener("keydown", kick, true);
+  }
   else behind.forEach(e => e.setAttribute("inert", ""));
   coverBtn.addEventListener("click", () => { dropCover(); goTo(firstScreen); });
   sel.addEventListener("change", dropCover);                 // jumping from the review list also lifts it
