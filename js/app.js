@@ -50,15 +50,19 @@
     if (!state.sound || !VO[id]) return;
     const token = voToken;
     const files = keys.map(k => typeof k === "object" ? k.file : VO[id][k] ? voFile(id, k) : null).filter(Boolean);
+    // a fresh player for every part (reusing one made some browsers play a moment of the next file from the old
+    // position first); the next part is loaded while the current one plays, so there is no gap between them
+    const make = file => { const a = new Audio(AUDIO + "vo/" + file); a.preload = "auto"; return a; };
+    let next = files.length ? make(files[0]) : null;
     if (delay) await new Promise(r => setTimeout(r, delay));
-    for (const file of files) {
+    for (let i = 0; i < files.length; i++) {
       if (token !== voToken) return;
-      if (!voEl) voEl = new Audio();
-      voEl.src = AUDIO + "vo/" + file;
-      try { await voEl.play(); } catch (e) { return; }              // no click yet (autoplay blocked) – stay quiet
+      const el = voEl = next;
+      next = i + 1 < files.length ? make(files[i + 1]) : null;
+      try { await el.play(); } catch (e) { return; }                 // no click yet (autoplay blocked) – stay quiet
       await new Promise(done => {                                    // until it ends – or stopVO pauses it
-        const end = () => { voEl.removeEventListener("ended", end); voEl.removeEventListener("pause", end); voEl.removeEventListener("error", end); done(); };
-        voEl.addEventListener("ended", end); voEl.addEventListener("pause", end); voEl.addEventListener("error", end);
+        const end = () => { el.removeEventListener("ended", end); el.removeEventListener("pause", end); el.removeEventListener("error", end); done(); };
+        el.addEventListener("ended", end); el.addEventListener("pause", end); el.addEventListener("error", end);
       });
     }
   }
