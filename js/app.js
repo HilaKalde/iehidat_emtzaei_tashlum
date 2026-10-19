@@ -926,7 +926,7 @@
     const nextLabel = isLast(s) ? "לסיכום הסט" : "למקצה הבא";
     const endFb = ok => {
       actions.hidden = true; choice.hidden = true;
-      const head = ok ? "נקודה! זיהיתם נכון." : "הפעם הנקודה ליריב.";
+      const head = ok ? "זיהיתם נכון." : "הפעם הנקודה ליריב.";
       return fbHtml(ok, head, ok ? s.fbCorrect : s.fbLost, ok ? a.coins : 0, `<div class="ifb-actions"><button type="button" class="btn" data-go="${s.next}">${nextLabel}</button></div>`);
     };
     const hit = done => {                                  // short rally: the hitting video plays once over the court
