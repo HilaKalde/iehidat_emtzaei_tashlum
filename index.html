@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>חדר כושר פיננסי – אמצעי תשלום</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/payments.css">
+  <link rel="stylesheet" href="css/style.css?v=20261019b">
+  <link rel="stylesheet" href="css/payments.css?v=20261019b">
 </head>
 <body>
   <div id="viewport">
@@ -26,15 +26,17 @@
   </div>
 
   <!-- כלי בדיקה (מחוץ לבמה – לא חלק מהלומדה) -->
+  <!-- ?v= on the css/js links: change it with every update, so a browser never keeps an old copy (also when opened from disk) -->
   <div id="review">
     <select id="review-jump" title="מעבר למסך"></select>
     <button id="review-notes" title="הערות הפקה ותסריטי סרטונים (מקש N)">📝 הערות</button>
     <button id="review-reset" title="איפוס התקדמות">↺ איפוס</button>
+    <span id="review-ver" title="גרסת הלומדה – מתעדכנת בכל שינוי (ה-?v= בקישורי הקבצים למטה)">גרסה 19.10 ב</span>
   </div>
   <div id="notes"></div>
   <div id="toast"></div>
 
-  <script src="js/data.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/data.js?v=20261019b"></script>
+  <script src="js/app.js?v=20261019b"></script>
 </body>
 </html>
