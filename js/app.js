@@ -68,7 +68,10 @@
   function voEnter(s) {
     if (!$("#cover").classList.contains("gone")) return stopVO();     // not under the cover – it starts with its PLAY
     if (s.type === "menu" && !firstVisit) return stopVO();            // the menu is narrated on the first visit only
-    if (s.type === "stop") return playVO(s.id, [state.ad === "skipped" ? "skipped" : "clicked", "enter"]);
+    if (s.type === "stop") {                                         // its button appears when the narration is over (or at once, sound off)
+      const show = () => { const w = $(`#scr-${s.id} [data-after-vo]`); if (w && !w.classList.contains("shown")) w.classList.add("shown", "a", "pop"); };
+      return playVO(s.id, [state.ad === "skipped" ? "skipped" : "clicked", "enter"]).then(show, show);
+    }
     if (s.type === "stretchEnd") return playVO(s.id, bank() < 50 ? ["enter", "band", "rest"] : ["enter", "rest"]);
     if (s.type === "station") {                                      // the instruction, then the first situation still open
       const a = ans(s.id), picks = (a && a.picks) || [], i = a && a.completed ? -1 : s.rows.findIndex((r, k) => picks[k] == null);
@@ -873,8 +876,8 @@
       <p class="stop-sub">לפני שלוחצים, כדאי לעצור ולבדוק:</p>
       <ul class="stop-list">${s.checks.map(c => `<li><span class="q" aria-hidden="true">?</span>${c}</li>`).join("")}</ul>
       <p class="stop-out">${s.outro}</p>
-      <div class="wall-actions"><button class="btn practice-btn" data-go="${s.next}">${s.button}</button></div>
-    </div>`;
+      <div class="wall-actions" data-after-vo><button class="btn practice-btn" data-go="${s.next}">${s.button}</button></div>
+    </div>`;                                   // the button shows once the narration (which ends with its words) is over
 
   /* ------------------------------------------------- tennis (set 4) */
   const ROUND_COINS = [25, 20, 10];          // coins for identifying the player after clue 1 / 2 / 3
