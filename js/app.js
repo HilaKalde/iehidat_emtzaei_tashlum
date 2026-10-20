@@ -67,7 +67,7 @@
     }
   }
   const voRow = (id, i) => ({ file: VO[id].file.slice(0, 2) + "-row" + (i + 1) + ".mp3" });   // one station situation
-  const voShared = k => ({ file: VO._shared[k][0].slice(0, 2) + "-" + k + ".mp3" });
+  const voShared = k => ({ file: "shared-" + k + ".mp3" });                                    // the tennis heads, used in every round
   // the narration of a slide as it opens
   function voEnter(s) {
     if (!$("#cover").classList.contains("gone")) return stopVO();     // not under the cover – it starts with its PLAY

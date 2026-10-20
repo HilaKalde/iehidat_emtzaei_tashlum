@@ -829,7 +829,8 @@ const DATA = {
 
 /* narration: one recording per slide (תיקיית נכסים/קריינות/N.mp3 = file NN, the slide number), cut into parts [from, to] in seconds.
    enter = when the slide opens; the other parts play on the matching event (layer opened, feedback, clue revealed …).
-   A part can also be a list of ranges, played back to back (to skip a stretch of a recording).
+   A part can also be a list of ranges, played back to back (to skip a stretch of a recording); a range with a third item
+   ("fix-….mp3") is taken from a correction recording (תיקיית נכסים/קריינות/תיקונים) instead of the slide's file.
    Stations: enter = the instruction, rows[i] = situation i+1 without its spoken number (read one by one as the learner answers).
    The cut points were measured in the recordings (pauses + the phrases that repeat between slides).
    _tools/vo-cut.js cuts each part into its own file, assets/audio/vo/NN-part.mp3 (rows → NN-rowK, "layer:x" → NN-layer-x),
@@ -854,7 +855,7 @@ const VO = {
   "s2-q1": { file: "17.mp3", enter: [0.26,29.58], ok: [29.58,34.11], bad: [34.11,40.46], explain: [40.46,61.65] },
   "s2-q2": { file: "18.mp3", enter: [0.03,32.21], ok: [32.21,36.3], bad: [36.3,42.86], explain: [42.96,63.89] },
   "s2-q3": { file: "19.mp3", enter: [0,30.44], ok: [30.44,34.6], bad: [34.6,41.29], explain: [41.29,62.61] },
-  "s2-q4": { file: "20.mp3", enter: [0,30.71], ok: [30.71,34.8], bad: [34.8,41.55], explain: [41.55,65.02] },
+  "s2-q4": { file: "20.mp3", enter: [[0,11.45],[0,6.5,"fix-20-yen.mp3"],[11.35,30.71]],   /* + the missing "שימו לב: באתר בנק ישראל שער הין…" (תיקונים) */ ok: [30.71,34.8], bad: [34.8,41.55], explain: [41.55,65.02] },
   "s2-q5": { file: "21.mp3", enter: [0.07,25.15], ok: [25.15,29.59], bad: [29.59,35.58], explain: [35.58,61.35] },
   "s2-q6": { file: "22.mp3", enter: [0.03,25.97], ok: [25.97,30.92], bad: [30.92,37.98], explain: [37.98,65.02] },
   "s2-q7": { file: "23.mp3", enter: [0.1,18.9], ok: [18.9,23.23], bad: [23.23,29.41], explain: [29.41,37.99] },
@@ -875,7 +876,7 @@ const VO = {
   "s3-q8": { file: "38.mp3", enter: [0.12,15], ok: [15,18.13], bad: [18.13,20.37], explain: [20.37,28.57] },
   "s3-sum": { file: "39.mp3", enter: [0,54.86] },
   "s4-video": { file: "40.mp3", enter: [0.07,2.85] },
-  "s4-learn": { file: "41.mp3", enter: [0.02,7.02], "layer:crypto": [[7.02,32.35],[105.25,106.72],[33.61,47.4]], "layer:stable": [[47.4,63.02],[105.25,106.72],[64.6,85.05]],   /* "חשוב לזכור" → the narrator's "מה חשוב לזכור?" from the CBDC layer (105.4–106.5) */ "layer:cbdc": [85.05,112.88], all: [112.88,122.1] },
+  "s4-learn": { file: "41.mp3", enter: [0.02,7.02], "layer:crypto": [[7.02,32.35],[105.25,106.72],[33.61,47.4]], "layer:stable": [[47.4,63.02],[105.25,106.72],[64.6,85.05]],   /* "חשוב לזכור" → the narrator's "מה חשוב לזכור?" from the CBDC layer (105.4–106.5) */ "layer:cbdc": [[0,6.4,"fix-41-cbdc.mp3"],[91.2,112.88]], all: [112.88,122.1] },
   "s4-howto": { file: "42.mp3", enter: [0.1,45.13] },
   "s4-r1": { file: "43.mp3", clue1: [0.03,4.96], clue2: [4.96,8.69], clue3: [8.69,12.13], ask: [12.13,14.27], ok: [14.27,29.43], lost: [37.33,43.08], again: [43.08,48.26] },
   "s4-r2": { file: "44.mp3", clue1: [0.08,4.51], clue2: [4.51,8.37], clue3: [8.37,14.36], ask: [14.36,16.48], ok: [16.48,25.46], lost: [25.46,32.29], again: [32.29,37.21] },
@@ -896,5 +897,5 @@ const VO = {
   "st-incomplete": { file: "59.mp3", enter: [0.04,10.34] },
   "st-end": { file: "60.mp3", enter: [0.23,1.73], band: [1.73,3.46], rest: [3.46,37.39] },
   "advanced": { file: "61.mp3", enter: [0.06,47.09] },
-  _shared: { okHead: ["43.mp3",33.78,35.15], lostHead: ["43.mp3",29.43,31.41] }   // tennis: read once in slide 43, used in every round
+  _shared: { okHead: ["fix-ok.mp3",0,1.9], lostHead: ["43.mp3",29.43,31.41] }   // tennis heads, used in every round: "זיהיתם נכון!" re-recorded (תיקונים), "הפעם הנקודה ליריב" from slide 43
 };
