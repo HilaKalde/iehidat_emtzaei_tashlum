@@ -837,7 +837,7 @@ const DATA = {
    which is what the lomda plays – after changing a cut point here, run it again. */
 const VO = {
   "intro": { file: "01.mp3", enter: [0,16.26] },
-  "menu": { file: "02.mp3", enter: [0.21,13.12] },
+  "menu": { file: "02.mp3", enter: [[0,2.0,"fix-02-title.mp3"],[0.05,13.12]] },   // + "אימון אמצעי תשלום" (תיקונים – the first of its two readings) before "האימון - סטים"
   "warmup": { file: "03.mp3", enter: [0.14,39.3] },
   "s1-boost": { file: "04.mp3", enter: [0.23,10.57] },
   "s1-video": { file: "05.mp3", enter: [0.08,2.2] },
