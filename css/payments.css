@@ -388,9 +388,9 @@
 .avatar { width: 32px; height: 32px; border-radius: 50%; background: #C7D0D6; display: inline-flex; align-items: center; justify-content: center; font-size: 16px; flex: none; }
 .ph-body { flex: 1; padding: 14px 10px; display: flex; flex-direction: column; align-items: flex-start; }
 .bubble { position: relative; max-width: 92%; background: #FFFFFF; border-radius: 4px 16px 16px 16px; padding: 10px 12px 18px; font-size: 15px; line-height: 1.4; box-shadow: 0 1px 2px rgba(0,0,0,.15); }
-.bubble .b-time { position: absolute; left: 10px; bottom: 3px; font-size: 10.5px; color: #8A979F; }
+.bubble .b-time { position: absolute; left: 10px; bottom: 3px; font-size: 10.5px; color: #5F6B73; }   /* ≥ 4.5:1 on white (accessibility) */
 .m-link { color: #1A62C4; text-decoration: underline; text-decoration-color: #1A62C4; }
-.ph-input { margin: 8px; height: 34px; border-radius: 17px; background: #FFFFFF; color: #9AA5AC; font-size: 13px; display: flex; align-items: center; padding: 0 14px; }
+.ph-input { margin: 8px; height: 34px; border-radius: 17px; background: #FFFFFF; color: #5F6B73; font-size: 13px; display: flex; align-items: center; padding: 0 14px; }
 .phone.whatsapp { background: #E9DFD4; }
 .phone.whatsapp .ph-head { background: #075E54; color: #FFFFFF; border: 0; }
 .phone.call { background: linear-gradient(180deg, #1D3B4C 0%, #0B1A22 100%); color: #FFFFFF; justify-content: space-between; padding: 30px 14px 24px; }
@@ -420,7 +420,7 @@
 .br-hero b { font-size: 18px; }
 .br-hero p { margin-top: 4px; font-size: 14px; line-height: 1.38; }
 .br-form { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 7px; }
-.br-form .fld { border: 1px solid #C9D2D8; border-radius: 8px; padding: 6px 10px; font-size: 13px; color: #8A979F; }
+.br-form .fld { border: 1px solid #C9D2D8; border-radius: 8px; padding: 6px 10px; font-size: 13px; color: #5F6B73; }
 .br-form .go { background: #123A5A; color: #FFFFFF; border-radius: 8px; padding: 7px; text-align: center; font-size: 14px; font-weight: 800; }
 /* mail */
 .mail { width: 330px; border-radius: 12px; overflow: hidden; background: #FFFFFF; box-shadow: 0 8px 20px rgba(0,0,0,.3); border: 1px solid #C9D2D8; font-size: 14.5px; }
@@ -539,3 +539,46 @@
 /* weights: the first-try hint, with a short note on the red field */
 .ifb-note { display: block; margin-top: 3px; font-size: 14.5px; font-weight: 500; }
 #review-ver { align-self: center; font-size: 12px; color: #CFEFF5; white-space: nowrap; }
+
+/* ---------- accessibility ---------- */
+/* the menu button – under the sound button, the same white disc */
+.a11y-btn { left: 10px; top: 152px; width: 46px; height: 46px; padding: 0; border: 0; border-radius: 50%; background: #FFFFFF; box-shadow: 0 2px 6px rgba(0,0,0,.25); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 180ms ease; }
+.a11y-btn svg { width: 30px; height: 30px; fill: var(--navy); stroke: var(--navy); }
+.a11y-btn:is(:hover, :focus-visible) { transform: translateY(-2px); }
+.a11y-btn:focus-visible, .a11y-panel :focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; }
+/* the panel */
+.a11y-panel { left: 66px; top: 96px; width: 318px; z-index: 70 !important; background: #FFFFFF; color: var(--navy); border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,.35); padding: 12px 14px 14px; font-size: 16px; line-height: 1.35; text-align: right; }
+.a11y-panel[hidden] { display: none; }
+.a11y-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.a11y-head h2 { margin: 0; font-size: 20px; font-weight: 800; }
+.a11y-x { width: 32px; height: 32px; border: 0; border-radius: 50%; background: #E9F3F6; color: var(--navy); font-size: 16px; cursor: pointer; }
+.a11y-list { display: grid; gap: 6px; }
+.a11y-opt { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; padding: 8px 10px; border: 0; border-radius: 10px; background: #F1F7F9; color: var(--navy); font: inherit; font-weight: 600; text-align: right; cursor: pointer; }
+.a11y-opt:hover { background: #E2F1F5; }
+.a11y-sw { order: 2; flex: none; position: relative; width: 40px; height: 22px; border-radius: 11px; background: #B5C3CA; transition: background 150ms; }
+.a11y-sw::after { content: ""; position: absolute; top: 3px; right: 3px; width: 16px; height: 16px; border-radius: 50%; background: #FFFFFF; transition: right 150ms; }
+.a11y-opt[aria-checked="true"] .a11y-sw { background: #1A7F99; }
+.a11y-opt[aria-checked="true"] .a11y-sw::after { right: 21px; }
+.a11y-foot { display: flex; justify-content: space-between; gap: 8px; margin-top: 10px; }
+.a11y-link { border: 0; background: none; padding: 4px 2px; color: #1A62C4; font: inherit; font-size: 15px; font-weight: 600; text-decoration: underline; cursor: pointer; }
+.a11y-statement { max-height: 470px; overflow-y: auto; font-size: 14.5px; }
+.a11y-statement h3 { margin: 0 0 6px; font-size: 17px; }
+.a11y-statement p, .a11y-statement ul { margin: 0 0 8px; }
+.a11y-statement ul { padding-right: 18px; }
+.a11y-date { color: #4D5C64; font-size: 13px; }
+/* captions for the narration */
+#captions { position: absolute; left: 50%; bottom: 62px; transform: translateX(-50%); z-index: 60; max-width: 880px; padding: 8px 18px; border-radius: 10px; background: rgba(5, 20, 28, .86); color: #FFFFFF; font-size: 21px; font-weight: 600; line-height: 1.45; text-align: center; pointer-events: none; }
+#captions[hidden] { display: none; }
+/* the slide region takes the focus when it opens – no ring around the whole slide */
+.screen:focus { outline: none; }
+
+/* what the switches do */
+html.a11y-contrast #stage { filter: contrast(1.35) saturate(1.1); }
+html.a11y-gray #stage { filter: grayscale(1); }
+html.a11y-contrast.a11y-gray #stage { filter: grayscale(1) contrast(1.35); }
+html.a11y-still #stage *, html.a11y-still #stage *::before, html.a11y-still #stage *::after { animation: none !important; transition: none !important; }
+html.a11y-still #stage .a { opacity: 1 !important; }
+html.a11y-links #stage :is(button, a[href], [role="button"], [role="switch"], input):not(:disabled) { outline: 3px solid #FFD400 !important; outline-offset: 2px; }
+html.a11y-links #stage a[href], html.a11y-links #stage .a11y-link { text-decoration: underline !important; }
+html.a11y-font #stage, html.a11y-font #stage * { font-family: Arial, "Arial Hebrew", sans-serif !important; letter-spacing: .01em; }
+html.a11y-cursor, html.a11y-cursor * { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44'%3E%3Cpath d='M4 3 L4 37 L13 28 L19 41 L25 38 L19 26 L32 26 Z' fill='%23000' stroke='%23fff' stroke-width='2.5' stroke-linejoin='round'/%3E%3C/svg%3E") 4 3, auto !important; }

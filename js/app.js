@@ -44,7 +44,7 @@
      A part is a key of the slide's VO entry, or { file } (a station situation, the tennis heads shared from slide 43). */
   let voEl = null, voToken = 0;
   const voFile = (id, key) => VO[id].file.slice(0, 2) + "-" + key.replace(/:/g, "-") + ".mp3";
-  function stopVO() { voToken++; if (voEl) try { voEl.pause(); } catch (e) {} }
+  function stopVO() { voToken++; if (voEl) try { voEl.pause(); } catch (e) {} caption(null); }
   async function playVO(id, keys, delay = 0) {
     stopVO();
     if (!state.sound || !VO[id]) return;
@@ -60,6 +60,7 @@
       const el = voEl = next;
       next = i + 1 < files.length ? make(files[i + 1]) : null;
       try { await el.play(); } catch (e) { return; }                 // no click yet (autoplay blocked) – stay quiet
+      caption(el, files[i].replace(/\.mp3$/, ""));                   // the accessibility captions follow it
       await new Promise(done => {                                    // until it ends – or stopVO pauses it
         const end = () => { el.removeEventListener("ended", end); el.removeEventListener("pause", end); el.removeEventListener("error", end); done(); };
         el.addEventListener("ended", end); el.addEventListener("pause", end); el.addEventListener("error", end);
@@ -130,15 +131,31 @@
   }
   // the character animations are animated WebP (full colour + soft alpha edges; GIF's 256 colours showed banding)
   const ANIM = ".webp", ANIM_TYPE = "image/webp";
-  const playGif = (img, base) => gifUrl(base + ANIM).then(u => { if (img && img.isConnected) img.src = u; });
+  // the characters move only when animations are allowed (accessibility menu / the system's reduce-motion setting)
+  const playGif = (img, base) => still() ? Promise.resolve() : gifUrl(base + ANIM).then(u => { if (img && img.isConnected) img.src = u; });
   const showStill = (img, base) => { if (img) img.src = IMG + base + ".png"; };
 
   // drawn ✕ – the font's "×" glyph sits off-centre inside the round close button
   const CLOSE_X = `<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>`;
   function layerHtml(id, inner) { return `<div class="layer" data-layer="${id}"><div class="dim"></div>${inner}</div>`; }
   const modalMode = on => $("#stage").classList.toggle("modal-open", on);
-  function showLayer(scr, id) { const L = $(`[data-layer="${id}"]`, scr); if (L) { L.classList.add("show"); modalMode(true); fixOrphans(L); const f = $(".close-x", L); if (f) f.focus({ preventScroll: true }); } }
-  function hideLayer(L) { L.classList.remove("show"); modalMode(false); }
+  // a layer is a dialog: what is behind it is out of reach (Tab stays inside; sound and accessibility stay usable),
+  // Esc or ✕ close it, and the focus goes back to the button that opened it
+  let layerOpener = null;
+  const behindLayer = (scr, L) => [...scr.children, ...$("#chrome").children].filter(el => el !== L && !el.contains(L) && !el.matches('[data-c="sound"], [data-c="a11y"], [data-c="a11y-panel"]'));
+  function showLayer(scr, id) {
+    const L = $(`[data-layer="${id}"]`, scr); if (!L) return;
+    layerOpener = document.activeElement;
+    L.classList.add("show"); modalMode(true); fixOrphans(L);
+    behindLayer(scr, L).forEach(el => (el.inert = true));
+    const f = $(".close-x", L); if (f) f.focus({ preventScroll: true });
+  }
+  function hideLayer(L) {
+    L.classList.remove("show"); modalMode(false);
+    const scr = L.closest(".screen"); if (scr) behindLayer(scr, L).forEach(el => (el.inert = false));
+    if (layerOpener && layerOpener.isConnected) layerOpener.focus({ preventScroll: true });
+    layerOpener = null;
+  }
 
   /* one feedback card for every exercise: head + coin tag + explanation (+ optional action button) */
   function fbHtml(ok, head, body, coins, action) {
@@ -150,6 +167,48 @@
     box.innerHTML = html; box.hidden = false;
     fixOrphans(box);
     if (focus) box.focus({ preventScroll: true });
+  }
+
+  /* --------------------------------------------------------- accessibility */
+  // the learner's choices in the accessibility menu (kept in this browser); "still" also follows the system's
+  // "reduce motion" setting
+  const A11Y_KEY = "payments-gym-a11y";
+  let a11y = {};
+  try { a11y = JSON.parse(localStorage.getItem(A11Y_KEY)) || {}; } catch (e) {}
+  const A11Y_OPTS = [
+    ["contrast", "ניגודיות גבוהה"], ["gray", "גווני אפור"], ["still", "עצירת אנימציות"], ["links", "הדגשת קישורים וכפתורים"],
+    ["font", "גופן קריא"], ["cursor", "סמן עכבר גדול"], ["captions", "כתוביות לקריינות"]
+  ];
+  const reduceMotion = window.matchMedia ? matchMedia("(prefers-reduced-motion: reduce)") : { matches: false };
+  const still = () => !!a11y.still || reduceMotion.matches;
+  function a11yApply() {
+    const html = document.documentElement;
+    A11Y_OPTS.forEach(([k]) => html.classList.toggle("a11y-" + k, !!a11y[k]));
+    html.classList.toggle("a11y-still", still());
+    $$("video.bg[autoplay]").forEach(v => { if (still()) v.pause(); else if (v.closest(".screen.active")) v.play().catch(() => {}); });
+    if (!a11y.captions) caption(null);
+  }
+  const a11ySave = () => { try { localStorage.setItem(A11Y_KEY, JSON.stringify(a11y)); } catch (e) {} };
+  if (reduceMotion.addEventListener) reduceMotion.addEventListener("change", a11yApply);
+
+  /* captions: the words of the narration part that is playing, one sentence at a time – the sentence is estimated
+     from how far the part has played (sentence length ∝ its share of the part's time) */
+  let capEl = null;
+  function caption(el, key) {
+    capEl = capEl || $("#captions");
+    if (!capEl) return;
+    if (!el || !a11y.captions || !VO_TEXT[key]) { capEl.hidden = true; capEl.textContent = ""; capEl.dataset.key = ""; return; }
+    const sent = VO_TEXT[key].match(/[^.!?:]+[.!?:]*\s*/g) || [VO_TEXT[key]];
+    const w = sent.map(s => s.length), tot = w.reduce((a, b) => a + b, 0);
+    const show = () => {
+      if (capEl.dataset.key !== key + "") return;
+      const d = el.duration || 1, at = (el.currentTime / d) * tot; let acc = 0, i = 0;
+      while (i < sent.length - 1 && acc + w[i] < at) acc += w[i++];
+      capEl.textContent = sent[i].trim(); capEl.hidden = false;
+    };
+    capEl.dataset.key = key; show();
+    el.addEventListener("timeupdate", show);
+    el.addEventListener("ended", () => { if (capEl.dataset.key === key + "") { capEl.hidden = true; capEl.textContent = ""; } }, { once: true });
   }
 
   /* ------------------------------------------------------------ renderers */
@@ -169,10 +228,10 @@
     const pill = (set, go, p, i) => {
       const st = SETS[set];
       return `<div class="machine-pill ${A("pop", 250 + i * 150)}" data-go="${go}" data-machine="${set}" tabindex="0" role="button"
-        aria-label="${st.title} – ${st.sub}" style="${pos(p[0], p[1], 200, 75)}">
+        aria-label="${st.title} – ${st.sub}${state.done[set] ? " (הושלם)" : ""}" style="${pos(p[0], p[1], 200, 75)}">
         <img src="${UI}pill-chapter.png" alt="">
         <div class="pt"><b>${st.title}</b><small>${st.sub}</small></div>
-        ${state.done[set] ? `<div class="check" aria-label="הושלם">✓</div>` : ""}
+        ${state.done[set] ? `<div class="check" aria-hidden="true">✓</div>` : ""}
       </div>`;
     };
     const machines = s.machines.map((m, i) => `
@@ -283,7 +342,7 @@
   const allVisited = s => s.items.every(it => visited(s).includes(it.key));
   function exploreLayer(s, it) {
     if (s.layout === "fraud") return `
-      <div class="modal card ex-modal fraud-modal" role="dialog" aria-label="${it.label}">
+      <div class="modal card ex-modal fraud-modal" role="dialog" aria-modal="true" aria-label="${it.label}">
         <button class="close-x" data-close="1" aria-label="סגירה">${CLOSE_X}</button>
         <div class="exm-head"><span class="glyph">${it.glyph}</span><div><div class="h-title">${it.label}</div>${it.sub ? `<div class="exm-sub" dir="ltr">${it.sub}</div>` : ""}</div></div>
         <div class="fr-sec what"><b>מה מאפיין את ההונאה?</b><p>${it.what}</p></div>
@@ -291,7 +350,7 @@
         <div class="fr-sec how"><b>איך נמנעים?</b><p>${it.how}</p></div>
       </div>`;
     if (s.layout === "players") return `
-      <div class="modal card ex-modal player-modal" role="dialog" aria-label="${it.title}">
+      <div class="modal card ex-modal player-modal" role="dialog" aria-modal="true" aria-label="${it.title}">
         <button class="close-x" data-close="1" aria-label="סגירה">${CLOSE_X}</button>
         <div class="exm-head"><span class="ball ${it.ball}"></span><div class="h-title">${it.title}</div></div>
         <p class="pl-what"><b>מה זה?</b> ${it.what}</p>
@@ -305,7 +364,7 @@
     // payment methods: Adam trains at that method's crossfit station beside the text (the GIF loads when the layer opens)
     const st = it.athlete && byStationHero(it.athlete);
     return `
-      <div class="modal card ex-modal ${st ? "has-athlete" : ""}" role="dialog" aria-label="${it.label}">
+      <div class="modal card ex-modal ${st ? "has-athlete" : ""}" role="dialog" aria-modal="true" aria-label="${it.label}">
         <button class="close-x" data-close="1" aria-label="סגירה">${CLOSE_X}</button>
         <div class="exm-grid">
           <div>
@@ -353,7 +412,7 @@
     $$("[data-item]", scr).forEach(b => b.addEventListener("click", () => {
       const key = b.dataset.item;
       const g = $(`[data-layer="it-${key}"] img[data-gif]`, scr);
-      if (g && !g.getAttribute("src")) g.src = IMG + g.dataset.gif + ANIM;   // the athlete's animation loads with its layer
+      if (g && !g.getAttribute("src")) g.src = IMG + g.dataset.gif + (still() ? ".png" : ANIM);   // the athlete's animation loads with its layer (a still when animations are off)
       const v = visited(s);
       if (!v.includes(key)) { state.visited[s.id] = v.concat(key); save(); }
       b.classList.add("seen");
@@ -527,7 +586,8 @@
       // crossfit exception to the "animate only when all is right" rule: Adam performs one repetition per
       // correct answer. The count follows the GIF's own rhythm (REP_MS) and starts once the GIF is on screen;
       // after the n-th repetition he returns to the still. No correct answers → he stays still.
-      if (n > 0) {
+      if (n > 0 && still()) reps.textContent = n;                    // animations off: the count, without the movement
+      else if (n > 0) {
         const onRep = k => { if (heroImg.isConnected) { reps.textContent = k; bumpEl(reps.parentElement); } };
         playReps(heroImg, s.hero, n, onRep).then(exact => {
           if (exact) return;
@@ -930,6 +990,7 @@
       return fbHtml(ok, head, ok ? s.fbCorrect : s.fbLost, ok ? a.coins : 0, `<div class="ifb-actions"><button type="button" class="btn" data-go="${s.next}">${nextLabel}</button></div>`);
     };
     const hit = done => {                                  // short rally: the hitting video plays once over the court
+      if (still()) return done();                          // animations off: straight on
       busy = true; more.disabled = true; know.disabled = true;
       let finished = false;
       const end = () => { if (finished) return; finished = true; vid.hidden = true; busy = false; know.disabled = false; done(); };
@@ -1127,6 +1188,10 @@
     div.className = "screen";
     div.id = "scr-" + s.id;
     div.dataset.type = s.type;
+    // for screen readers: each slide is a named region; it gets the focus when it opens (see goTo), so its name is read
+    div.setAttribute("role", "region");
+    div.setAttribute("aria-label", String(s.title || s.name).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim());
+    div.tabIndex = -1;
     div.innerHTML = R[s.type](s);
     $$("[data-d]", div).forEach(el => el.style.setProperty("--d", el.dataset.d + "ms"));
     $$(".a", div).forEach(el => el.addEventListener("animationend", e => { if (e.target === el) el.classList.remove("a"); }));
@@ -1213,7 +1278,7 @@
       p.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); goTo(p.dataset.go); } });
     });
     const bgVideo = $("video.bg[autoplay]", scr);
-    if (bgVideo) bgVideo.play().catch(() => {});
+    if (bgVideo) { if (still()) bgVideo.pause(); else bgVideo.play().catch(() => {}); }   // a still frame when animations are off
     if (BIND[s.type]) BIND[s.type](scr, s);
   }
 
@@ -1228,6 +1293,32 @@
     <button type="button" class="nav-btn next-btn hidden" data-c="next" aria-label="הבא" title="הבא"><img src="${UI}nav-arrow.png" alt=""></button>
     <button type="button" class="nav-btn prev-btn hidden" data-c="prev" aria-label="הקודם" title="הקודם"><img src="${UI}nav-arrow.png" alt=""></button>
     <button class="btn-img sound-btn" data-c="sound" title="סאונד"><img alt="סאונד"></button>
+    <button type="button" class="btn-img a11y-btn" data-c="a11y" title="נגישות" aria-label="תפריט נגישות" aria-haspopup="dialog" aria-expanded="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="4.2" r="2.2"/><path d="M4.5 8.4 12 9.8l7.5-1.4M12 9.8v5.1m0 0-3.4 6.4M12 14.9l3.4 6.4" fill="none" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="a11y-panel" data-c="a11y-panel" role="dialog" aria-modal="true" aria-labelledby="a11y-h" hidden>
+      <div class="a11y-head"><h2 id="a11y-h">נגישות</h2><button type="button" class="a11y-x" data-a11y-close aria-label="סגירת תפריט הנגישות">✕</button></div>
+      <div data-a11y-menu>
+        <div class="a11y-list">${A11Y_OPTS.map(([k, label]) => `<button type="button" class="a11y-opt" role="switch" aria-checked="false" data-a11y="${k}"><span class="a11y-sw" aria-hidden="true"></span><span>${label}</span></button>`).join("")}</div>
+        <div class="a11y-foot"><button type="button" class="a11y-link" data-a11y-statement>הצהרת נגישות</button><button type="button" class="a11y-link" data-a11y-reset>איפוס הגדרות הנגישות</button></div>
+      </div>
+      <div class="a11y-statement" data-a11y-text hidden tabindex="-1">
+        <h3>הצהרת נגישות</h3>
+        <p>הלומדה "חדר כושר פיננסי – אימון אמצעי תשלום" נבנתה כך שתהיה נגישה ככל האפשר לכל הלומדים, בהתאם לתקן הישראלי ת"י 5568 (המבוסס על הנחיות WCAG 2.1 ברמה AA).</p>
+        <p><b>מה נעשה בלומדה:</b></p>
+        <ul>
+          <li>אפשר לעבור על כל הלומדה במקלדת: Tab ו-Shift+Tab למעבר בין הרכיבים, Enter או רווח להפעלה, Esc לסגירת חלונות.</li>
+          <li>תמיכה בקוראי מסך: כל שקף מוכרז בשמו כשהוא נפתח, ולכפתורים ולתמונות יש תיאור.</li>
+          <li>תוכן הקריינות מופיע גם ככתוב על המסך, ואפשר להפעיל כתוביות לקריינות.</li>
+          <li>כפתור הסאונד משתיק את הקריינות ואת הצלילים בכל רגע.</li>
+          <li>תפריט נגישות: ניגודיות גבוהה, גווני אפור, עצירת אנימציות, הדגשת קישורים וכפתורים, גופן קריא, סמן עכבר גדול וכתוביות.</li>
+          <li>הלומדה מכבדת את הגדרת "הפחתת תנועה" של מערכת ההפעלה.</li>
+        </ul>
+        <p><b>נתקלתם בבעיית נגישות?</b> נשמח לשמוע ולתקן: [להשלים – שם ופרטי הקשר של רכז/ת הנגישות].</p>
+        <p class="a11y-date">עודכן: אוקטובר 2026</p>
+        <button type="button" class="a11y-link" data-a11y-back>חזרה לתפריט הנגישות</button>
+      </div>
+    </div>
     <div class="boi-mark hidden" data-c="boi"><img src="${UI}logo-boi.png" alt="בנק ישראל"></div>
     <button type="button" class="skip-practice hidden" data-c="skip" title="דילוג לתרגול">
       <span>דלגו לתרגול</span>
@@ -1237,7 +1328,39 @@
       </svg>
     </button>`;
   const C = k => $(`[data-c="${k}"]`, chrome);
-  const soundImg = () => { $("img", C("sound")).src = UI + (state.sound ? "sound-on.png" : "sound-off.png"); };
+  const soundImg = () => { const i = $("img", C("sound")); i.src = UI + (state.sound ? "sound-on.png" : "sound-off.png"); i.alt = state.sound ? "השתקת הסאונד" : "הפעלת הסאונד"; };
+
+  // the accessibility menu: switches (remembered in this browser), the accessibility statement, reset
+  const a11yBtn = C("a11y"), a11yPanel = C("a11y-panel");
+  const a11ySync = () => $$("[data-a11y]", a11yPanel).forEach(b => b.setAttribute("aria-checked", String(!!a11y[b.dataset.a11y])));
+  const a11yView = statement => {
+    $("[data-a11y-menu]", a11yPanel).hidden = statement; $("[data-a11y-text]", a11yPanel).hidden = !statement;
+    (statement ? $("[data-a11y-text]", a11yPanel) : $("[data-a11y-statement]", a11yPanel)).focus();
+  };
+  const a11yOpen = on => {
+    a11yPanel.hidden = !on; a11yBtn.setAttribute("aria-expanded", String(on));
+    if (on) { $("[data-a11y-menu]", a11yPanel).hidden = false; $("[data-a11y-text]", a11yPanel).hidden = true; a11ySync(); $("[data-a11y]", a11yPanel).focus(); }
+    else a11yBtn.focus();
+  };
+  a11yBtn.addEventListener("click", () => a11yOpen(a11yPanel.hidden));
+  a11yPanel.addEventListener("click", e => {
+    const o = e.target.closest("[data-a11y]");
+    if (o) { const k = o.dataset.a11y; a11y[k] = !a11y[k]; a11ySave(); a11yApply(); a11ySync(); return; }
+    if (e.target.closest("[data-a11y-close]")) return a11yOpen(false);
+    if (e.target.closest("[data-a11y-statement]")) return a11yView(true);
+    if (e.target.closest("[data-a11y-back]")) return a11yView(false);
+    if (e.target.closest("[data-a11y-reset]")) { a11y = {}; a11ySave(); a11yApply(); a11ySync(); toast("הגדרות הנגישות אופסו"); }
+  });
+  a11yPanel.addEventListener("keydown", e => {
+    if (e.key === "Escape") { e.stopPropagation(); return a11yOpen(false); }
+    if (e.key !== "Tab") return;                                       // Tab cycles inside the panel
+    const f = $$("button, [tabindex='-1']", a11yPanel).filter(el => el.offsetParent !== null && el.tabIndex >= 0);
+    if (!f.length) return;
+    const i = f.indexOf(document.activeElement), last = f.length - 1;
+    if (e.shiftKey && i <= 0) { e.preventDefault(); f[last].focus(); }
+    else if (!e.shiftKey && (i === last || i < 0)) { e.preventDefault(); f[0].focus(); }
+  });
+  a11yApply();
   soundImg();
   C("sound").addEventListener("click", () => {
     state.sound = !state.sound; save(); soundImg();
@@ -1278,7 +1401,7 @@
   }
 
   /* ---------------------------------------------------------- navigation */
-  let current = null;
+  let current = null, booted = false;
   const firstUnanswered = () => (DATA.screens.filter(x => x.mode === "stretch").find(x => !isDone(x.id)) || {}).id;
   function goTo(id) {
     if (id === "st-end" && firstUnanswered()) id = "st-incomplete";
@@ -1296,6 +1419,10 @@
     current = s;
     updateChrome(s);
     voEnter(s);
+    // the old slide (and the button that was clicked in it) is gone – the focus moves to the new slide, whose name a
+    // screen reader then reads; not on the first load, while the cover is still up
+    if (booted && $("#cover").classList.contains("gone")) fresh.focus({ preventScroll: true });
+    booted = true;
     requestAnimationFrame(() => fixOrphans(fresh));
     try { history.replaceState(null, "", "#" + s.id); } catch (e) {}
     reviewSync();
