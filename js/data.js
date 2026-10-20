@@ -10,7 +10,8 @@ const LINKS = {
   scamsGuide: "https://www.boi.org.il/information/bank-paymnts/financial-education/campaigns/digital_scams_guide/",
   pod24: "https://youtu.be/jcac3rMQiHQ",
   pod32: "https://youtu.be/j9Wo63sIugc",
-  pod5: "", pod6: ""      // ⚠ קישורי פרקים 5 ו-6 עדיין חסרים – להשלים
+  pod5: "https://youtu.be/xXDnJDCKN-U",
+  pod6: "https://youtu.be/Os8ZEptwWeE"
 };
 
 const SETS = {
