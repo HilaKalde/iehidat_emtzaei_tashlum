@@ -582,3 +582,6 @@ html.a11y-links #stage :is(button, a[href], [role="button"], [role="switch"], in
 html.a11y-links #stage a[href], html.a11y-links #stage .a11y-link { text-decoration: underline !important; }
 html.a11y-font #stage, html.a11y-font #stage * { font-family: Arial, "Arial Hebrew", sans-serif !important; letter-spacing: .01em; }
 html.a11y-cursor, html.a11y-cursor * { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' viewBox='0 0 44 44'%3E%3Cpath d='M4 3 L4 37 L13 28 L19 41 L25 38 L19 26 L32 26 Z' fill='%23000' stroke='%23fff' stroke-width='2.5' stroke-linejoin='round'/%3E%3C/svg%3E") 4 3, auto !important; }
+
+/* "not all answered": the way on to the summary without coins – a quieter last line */
+.incomplete-wall .inc-or { font-size: .82em; font-weight: 600; opacity: .9; }

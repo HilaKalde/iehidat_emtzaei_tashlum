@@ -74,7 +74,7 @@
     if (!$("#cover").classList.contains("gone")) return stopVO();     // not under the cover – it starts with its PLAY
     if (s.type === "menu" && !firstVisit) return stopVO();            // the menu is narrated on the first visit only
     if (s.type === "stop") return playVO(s.id, [state.ad === "skipped" ? "skipped" : "clicked", "enter"]);
-    if (s.type === "stretchEnd") return playVO(s.id, bank() < 50 ? ["enter", "band", "rest"] : ["enter", "rest"]);
+    if (s.type === "stretchEnd") return playVO(s.id, !s.hideScore && bank() < 50 ? ["enter", "band", "rest"] : ["enter", "rest"]);
     if (s.type === "station") {                                      // the instruction, then the first situation still open
       const a = ans(s.id), picks = (a && a.picks) || [], i = a && a.completed ? -1 : s.rows.findIndex((r, k) => picks[k] == null);
       return playVO(s.id, i < 0 ? ["enter"] : ["enter", voRow(s.id, i)]);
@@ -1146,8 +1146,8 @@
       ${hero("aya-adam-like", 95, 150, 520, A("fly-l", 300), "איה ואדם מחייכים ועושים לייק")}
       <div class="card sum-card narrow ${A("fly-b", 0)}">
         <div class="h-title">${s.title}</div>
-        <div class="score-line ${A("pop", 500)}"><span class="coin"></span>נשארו לכם <span class="big">${b}</span> מתוך 100 מטבעות בקופה</div>
-        <p class="h-sub" style="margin-top:8px">${band}</p>
+        ${s.hideScore ? "" : `<div class="score-line ${A("pop", 500)}"><span class="coin"></span>נשארו לכם <span class="big">${b}</span> מתוך 100 מטבעות בקופה</div>
+        <p class="h-sub" style="margin-top:8px">${band}</p>`}
         <p class="txt" style="font-size:18px;margin-top:6px">${s.learned}</p>
         <ul class="bul">${s.bullets.map(x => `<li>${x}</li>`).join("")}</ul>
         <p class="closing">${s.closing}</p>
@@ -1370,7 +1370,8 @@
   C("home").addEventListener("click", () => goTo("menu"));
   C("skip").addEventListener("click", () => { const to = C("skip").dataset.go; if (to) goTo(to); });
   C("next").addEventListener("click", () => current && current.next && goTo(current.next));
-  C("prev").addEventListener("click", () => current && current.prev && goTo(current.prev));
+  // on the "not all answered" slide, back goes to the first stretch question still open
+  C("prev").addEventListener("click", () => current && current.prev && goTo(current.type === "incomplete" ? (firstUnanswered() || current.prev) : current.prev));
 
   const TOP_LEVEL = ["intro", "menu"];
   const COIN_TYPES = ["station", "weights", "pull", "tennis"];
