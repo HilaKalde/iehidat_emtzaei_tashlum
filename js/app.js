@@ -170,11 +170,11 @@
   }
 
   /* --------------------------------------------------------- accessibility */
-  // the learner's choices in the accessibility menu (kept in this browser); "still" also follows the system's
-  // "reduce motion" setting
+  // switch settings (the options below are applied by a11yApply; there is no menu any more)
   const A11Y_KEY = "payments-gym-a11y";
   let a11y = {};
-  try { a11y = JSON.parse(localStorage.getItem(A11Y_KEY)) || {}; } catch (e) {}
+  // (the menu was taken out at the client's request – nothing is read from storage, so no saved choice stays on without a
+  //  way to turn it off; "still" follows only the system's reduce-motion setting)
   const A11Y_OPTS = [
     ["contrast", "ניגודיות גבוהה"], ["gray", "גווני אפור"], ["still", "עצירת אנימציות"], ["links", "הדגשת קישורים וכפתורים"],
     ["font", "גופן קריא"], ["cursor", "סמן עכבר גדול"], ["captions", "כתוביות לקריינות"]
@@ -1297,32 +1297,6 @@
     <button type="button" class="nav-btn next-btn hidden" data-c="next" aria-label="הבא" title="הבא"><img src="${UI}nav-arrow.png" alt=""></button>
     <button type="button" class="nav-btn prev-btn hidden" data-c="prev" aria-label="הקודם" title="הקודם"><img src="${UI}nav-arrow.png" alt=""></button>
     <button class="btn-img sound-btn" data-c="sound" title="סאונד"><img alt="סאונד"></button>
-    <button type="button" class="btn-img a11y-btn" data-c="a11y" title="נגישות" aria-label="תפריט נגישות" aria-haspopup="dialog" aria-expanded="false">
-      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="4.2" r="2.2"/><path d="M4.5 8.4 12 9.8l7.5-1.4M12 9.8v5.1m0 0-3.4 6.4M12 14.9l3.4 6.4" fill="none" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
-    <div class="a11y-panel" data-c="a11y-panel" role="dialog" aria-modal="true" aria-labelledby="a11y-h" hidden>
-      <div class="a11y-head"><h2 id="a11y-h">נגישות</h2><button type="button" class="a11y-x" data-a11y-close aria-label="סגירת תפריט הנגישות">✕</button></div>
-      <div data-a11y-menu>
-        <div class="a11y-list">${A11Y_OPTS.map(([k, label]) => `<button type="button" class="a11y-opt" role="switch" aria-checked="false" data-a11y="${k}"><span class="a11y-sw" aria-hidden="true"></span><span>${label}</span></button>`).join("")}</div>
-        <div class="a11y-foot"><button type="button" class="a11y-link" data-a11y-statement>הצהרת נגישות</button><button type="button" class="a11y-link" data-a11y-reset>איפוס הגדרות הנגישות</button></div>
-      </div>
-      <div class="a11y-statement" data-a11y-text hidden tabindex="-1">
-        <h3>הצהרת נגישות</h3>
-        <p>הלומדה "חדר כושר פיננסי – אימון אמצעי תשלום" נבנתה כך שתהיה נגישה ככל האפשר לכל הלומדים, בהתאם לתקן הישראלי ת"י 5568 (המבוסס על הנחיות WCAG 2.1 ברמה AA).</p>
-        <p><b>מה נעשה בלומדה:</b></p>
-        <ul>
-          <li>אפשר לעבור על כל הלומדה במקלדת: Tab ו-Shift+Tab למעבר בין הרכיבים, Enter או רווח להפעלה, Esc לסגירת חלונות.</li>
-          <li>תמיכה בקוראי מסך: כל שקף מוכרז בשמו כשהוא נפתח, ולכפתורים ולתמונות יש תיאור.</li>
-          <li>תוכן הקריינות מופיע גם ככתוב על המסך, ואפשר להפעיל כתוביות לקריינות.</li>
-          <li>כפתור הסאונד משתיק את הקריינות ואת הצלילים בכל רגע.</li>
-          <li>תפריט נגישות: ניגודיות גבוהה, גווני אפור, עצירת אנימציות, הדגשת קישורים וכפתורים, גופן קריא, סמן עכבר גדול וכתוביות.</li>
-          <li>הלומדה מכבדת את הגדרת "הפחתת תנועה" של מערכת ההפעלה.</li>
-        </ul>
-        <p><b>נתקלתם בבעיית נגישות?</b> נשמח לשמוע ולתקן: [להשלים – שם ופרטי הקשר של רכז/ת הנגישות].</p>
-        <p class="a11y-date">עודכן: אוקטובר 2026</p>
-        <button type="button" class="a11y-link" data-a11y-back>חזרה לתפריט הנגישות</button>
-      </div>
-    </div>
     <div class="boi-mark hidden" data-c="boi"><img src="${UI}logo-boi.png" alt="בנק ישראל"></div>
     <button type="button" class="skip-practice hidden" data-c="skip" title="דילוג לתרגול">
       <span>דלגו לתרגול</span>
@@ -1334,36 +1308,6 @@
   const C = k => $(`[data-c="${k}"]`, chrome);
   const soundImg = () => { const i = $("img", C("sound")); i.src = UI + (state.sound ? "sound-on.png" : "sound-off.png"); i.alt = state.sound ? "השתקת הסאונד" : "הפעלת הסאונד"; };
 
-  // the accessibility menu: switches (remembered in this browser), the accessibility statement, reset
-  const a11yBtn = C("a11y"), a11yPanel = C("a11y-panel");
-  const a11ySync = () => $$("[data-a11y]", a11yPanel).forEach(b => b.setAttribute("aria-checked", String(!!a11y[b.dataset.a11y])));
-  const a11yView = statement => {
-    $("[data-a11y-menu]", a11yPanel).hidden = statement; $("[data-a11y-text]", a11yPanel).hidden = !statement;
-    (statement ? $("[data-a11y-text]", a11yPanel) : $("[data-a11y-statement]", a11yPanel)).focus();
-  };
-  const a11yOpen = on => {
-    a11yPanel.hidden = !on; a11yBtn.setAttribute("aria-expanded", String(on));
-    if (on) { $("[data-a11y-menu]", a11yPanel).hidden = false; $("[data-a11y-text]", a11yPanel).hidden = true; a11ySync(); $("[data-a11y]", a11yPanel).focus(); }
-    else a11yBtn.focus();
-  };
-  a11yBtn.addEventListener("click", () => a11yOpen(a11yPanel.hidden));
-  a11yPanel.addEventListener("click", e => {
-    const o = e.target.closest("[data-a11y]");
-    if (o) { const k = o.dataset.a11y; a11y[k] = !a11y[k]; a11ySave(); a11yApply(); a11ySync(); return; }
-    if (e.target.closest("[data-a11y-close]")) return a11yOpen(false);
-    if (e.target.closest("[data-a11y-statement]")) return a11yView(true);
-    if (e.target.closest("[data-a11y-back]")) return a11yView(false);
-    if (e.target.closest("[data-a11y-reset]")) { a11y = {}; a11ySave(); a11yApply(); a11ySync(); toast("הגדרות הנגישות אופסו"); }
-  });
-  a11yPanel.addEventListener("keydown", e => {
-    if (e.key === "Escape") { e.stopPropagation(); return a11yOpen(false); }
-    if (e.key !== "Tab") return;                                       // Tab cycles inside the panel
-    const f = $$("button, [tabindex='-1']", a11yPanel).filter(el => el.offsetParent !== null && el.tabIndex >= 0);
-    if (!f.length) return;
-    const i = f.indexOf(document.activeElement), last = f.length - 1;
-    if (e.shiftKey && i <= 0) { e.preventDefault(); f[last].focus(); }
-    else if (!e.shiftKey && (i === last || i < 0)) { e.preventDefault(); f[0].focus(); }
-  });
   a11yApply();
   soundImg();
   C("sound").addEventListener("click", () => {
