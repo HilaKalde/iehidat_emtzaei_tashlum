@@ -1234,8 +1234,12 @@
       // ▶ on a video screen: the finished film plays inside the TV; a slot without a film shows the black placeholder
       if (e.target.closest("[data-play-slot]")) {
         const v = VIDEOS[s.video];
-        if (v && v.file) playFile($("[data-tv]", scr), v.file, v.title);
-        else if (v && v.yt) playYouTube($("[data-tv]", scr), v.yt, v.title); else $("[data-blank]", scr).hidden = false;
+        // YouTube when the lomda is served from a site; the lomda's own copy when it is opened from disk (YouTube
+        // refuses embedded videos there)
+        const tv = $("[data-tv]", scr), fromDisk = location.protocol === "file:";
+        if (v && v.yt && !(fromDisk && v.file)) playYouTube(tv, v.yt, v.title);
+        else if (v && v.file) playFile(tv, v.file, v.title);
+        else $("[data-blank]", scr).hidden = false;
         return;
       }
     });
