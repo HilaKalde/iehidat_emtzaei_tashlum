@@ -81,11 +81,10 @@
       return playVO(s.id, i < 0 ? ["enter"] : ["enter", voRow(s.id, i)]);
     }
     if (s.type === "tennis") { const a = ans(s.id); return a && a.completed ? stopVO() : playVO(s.id, ["clue" + ((a && a.clue) || 1)]); }
-    // "קיבלתם הודעת SMS:" → the SMS sound → "בטוח או חשוד?…"; a phone call only rings – the caller is heard once the
-    // learner answers (the green button, bindPull)
-    if (!s.enterSfx) return playVO(s.id, ["enter"]);
+    // "קיבלתם הודעת SMS:" → the SMS sound → the message read aloud ("msg") → "בטוח או חשוד?…" (parts a slide lacks are
+    // skipped); a phone call only rings – the caller is heard once the learner answers (the green button, bindPull)
     if (s.mock && s.mock.kind === "call") return playVO(s.id, isDone(s.id) ? ["enter"] : ["enter", { sfx: s.enterSfx }]);
-    playVO(s.id, ["enter", { sfx: s.enterSfx }, "enter:2"]);
+    playVO(s.id, s.enterSfx ? ["enter", { sfx: s.enterSfx }, "msg", "enter:2"] : ["enter", "msg", "enter:2"]);
   }
 
   /* -------------------------------------------------------------- helpers */
