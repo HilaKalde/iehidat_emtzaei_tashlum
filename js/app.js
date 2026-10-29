@@ -301,11 +301,23 @@
     stopVO();
     box.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1&playsinline=1" title="${title}" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
   }
-  // the same for a film that ships with the lomda (assets/video) – a plain player with its own controls
-  function playFile(box, file, title) {
+  // a set's film (the video screens), as in the currency unit: it plays over the whole stage; ✕ / Esc closes and stops it
+  function openFilm(scr, v) {
     stopVO();
-    box.innerHTML = `<video class="tv-film" src="${VID + file}" title="${title}" controls autoplay playsinline></video>`;
-    box.firstElementChild.muted = !state.sound;
+    const fromDisk = location.protocol === "file:";   // YouTube refuses embedded videos there – the lomda's own copy plays
+    const ov = document.createElement("div");
+    ov.className = "film-full"; ov.setAttribute("role", "dialog"); ov.setAttribute("aria-label", v.title);
+    ov.innerHTML = (v.yt && !(fromDisk && v.file)
+      ? `<iframe src="https://www.youtube-nocookie.com/embed/${v.yt}?autoplay=1&rel=0&modestbranding=1&playsinline=1" title="${v.title}" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`
+      : `<video src="${VID + v.file}" title="${v.title}" controls autoplay playsinline></video>`)
+      + `<button type="button" class="close-x film-close" aria-label="סגירת הסרטון">${CLOSE_X}</button>`;
+    const vid = $("video", ov); if (vid) vid.muted = !state.sound;
+    const close = () => { ov.remove(); modalMode(false); document.removeEventListener("keydown", esc); $("[data-play-slot]", scr)?.focus({ preventScroll: true }); };
+    const esc = e => { if (e.key === "Escape") close(); };
+    $(".film-close", ov).addEventListener("click", close);
+    document.addEventListener("keydown", esc);
+    scr.appendChild(ov); modalMode(true);
+    $(".film-close", ov).focus({ preventScroll: true });
   }
   function bindBoost(scr, s) {
     const box = $("[data-film]", scr), v = $("video.tv-video", box);
@@ -539,7 +551,9 @@
     const a0 = ans(s.id);
     const picks = a0 && a0.picks ? a0.picks.slice() : Array(s.rows.length).fill(null);
     const nextBtn = isLast(s) ? "לסיכום הסט" : "לתחנה הבאה";
-    const fbContent = (n, coins) => fbHtml(n === s.rows.length, n === s.rows.length ? s.fbFull : s.fbPart, s.explain, coins,
+    // no correct answer: the score instead of "כמעט! אדם השלים חזרה עבור כל תשובה נכונה" (Adam did no repetition)
+    const fbZero = () => `עניתם נכון על 0 מתוך ${s.rows.length} תשובות.` + (s.fbZeroMore ? " " + s.fbZeroMore : "");
+    const fbContent = (n, coins) => fbHtml(n === s.rows.length, n === s.rows.length ? s.fbFull : n === 0 ? fbZero() : s.fbPart, s.explain, coins,
       `<div class="ifb-actions"><button type="button" class="link-btn" data-hidefb>לצפייה בתשובות</button><button type="button" class="btn" data-go="${s.next}">${nextBtn}</button></div>`);
     const reveal = () => {                                     // a situation appears only after the previous one was answered
       let open = 0; while (open < rows.length - 1 && picks[open] != null) open++;
@@ -614,7 +628,7 @@
       }
       playFeedbackSound(n === s.rows.length);
       setTimeout(() => { if (scr.classList.contains("active")) openFb(true); }, 900);
-      playVO(s.id, [n === s.rows.length ? "full" : "part", "explain"], 900);
+      playVO(s.id, [n === s.rows.length ? "full" : n === 0 ? "zero" : "part", "explain"], 900);   // "zero": only where recorded (slide 12)
     });
   }
   /* exact repetitions: the GIF is decoded here (WebCodecs ImageDecoder) and its frames are drawn on a canvas laid
@@ -1235,14 +1249,10 @@
         const L = e.target.closest(".layer"); if (L) { hideLayer(L); if (scr._onLayerClose) scr._onLayerClose(); }
         return;
       }
-      // ▶ on a video screen: the finished film plays inside the TV; a slot without a film shows the black placeholder
+      // ▶ on a video screen: the finished film opens over the whole stage; a slot without a film shows the black placeholder
       if (e.target.closest("[data-play-slot]")) {
         const v = VIDEOS[s.video];
-        // YouTube when the lomda is served from a site; the lomda's own copy when it is opened from disk (YouTube
-        // refuses embedded videos there)
-        const tv = $("[data-tv]", scr), fromDisk = location.protocol === "file:";
-        if (v && v.yt && !(fromDisk && v.file)) playYouTube(tv, v.yt, v.title);
-        else if (v && v.file) playFile(tv, v.file, v.title);
+        if (v && (v.yt || v.file)) openFilm(scr, v);
         else $("[data-blank]", scr).hidden = false;
         return;
       }
