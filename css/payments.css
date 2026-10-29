@@ -280,12 +280,12 @@
 /* ---------- rate set (Aya on the bench) ---------- */
 .plate-tags { left: 0; top: 0; width: 0; height: 0; z-index: 6; }
 .plate-tag {
-  position: absolute; top: 146px; width: 170px; padding: 6px 10px 8px; border-radius: 16px; background: #FFFFFF;
+  position: absolute; top: 200px; width: 170px; padding: 6px 10px 8px; border-radius: 16px; background: #FFFFFF;
   box-shadow: var(--btn-shadow); display: flex; flex-direction: column; align-items: center; gap: 4px;
 }
 .plate-tag::after { content: ""; position: absolute; left: 50%; top: 100%; transform: translateX(-50%); border: 9px solid transparent; border-top: 11px solid #FFFFFF; border-bottom: 0; }
-.plate-tag.right { left: 327px; }
-.plate-tag.left  { left: 18px; }
+.plate-tag.right { left: 312px; }   /* centred over the plates of Aya's barbell (BENCH in app.js) */
+.plate-tag.left  { left: 34px; }
 .plate-tag .pt-l { font-size: 15px; font-weight: 800; color: var(--teal); white-space: nowrap; }
 .plate-tag .answer-input { width: 150px; height: 42px; font-size: 21px; border-radius: 12px; }
 .plate-tag .in-wrap { position: relative; display: inline-flex; align-items: center; gap: 4px; direction: ltr; }

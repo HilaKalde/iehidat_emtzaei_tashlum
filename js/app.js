@@ -687,7 +687,7 @@
   function bumpEl(el) { el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump"); }
 
   /* ------------------------------------------------- rate set (weights) */
-  const BENCH = [50, 205, 412, 450];                 // aya-bench still + GIF share one canvas
+  const BENCH = [71, 262, 371, 405];                 // aya-bench still + GIF share one canvas (90% of 412×450, a little lower)
   // flag emoji don't render on Windows – small drawn flags instead
   const FLAGS = {
     fr: `<svg viewBox="0 0 3 2"><path fill="#002395" d="M0 0h1v2H0z"/><path fill="#fff" d="M1 0h1v2H1z"/><path fill="#ED2939" d="M2 0h1v2H2z"/></svg>`,
