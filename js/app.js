@@ -53,7 +53,7 @@
     const files = keys.map(k => typeof k === "object" ? k.file || k.sfx : VO[id][k] ? voFile(id, k) : null).filter(Boolean);
     // a fresh player for every part (reusing one made some browsers play a moment of the next file from the old
     // position first); the next part is loaded while the current one plays, so there is no gap between them
-    const make = file => { const a = new Audio(AUDIO + (/^sfx-/.test(file) ? "" : "vo/") + file); a.preload = "auto"; if (/^sfx-/.test(file)) a.volume = .5; return a; };
+    const make = file => { const a = new Audio(AUDIO + (/^sfx-/.test(file) ? "" : "vo/") + file); a.preload = "auto"; if (/^sfx-/.test(file)) a.volume = /ring/.test(file) ? .85 : .5; return a; };
     let next = files.length ? make(files[0]) : null;
     if (delay) await new Promise(r => setTimeout(r, delay));
     for (let i = 0; i < files.length; i++) {
@@ -81,7 +81,11 @@
       return playVO(s.id, i < 0 ? ["enter"] : ["enter", voRow(s.id, i)]);
     }
     if (s.type === "tennis") { const a = ans(s.id); return a && a.completed ? stopVO() : playVO(s.id, ["clue" + ((a && a.clue) || 1)]); }
-    playVO(s.id, s.enterSfx ? ["enter", { sfx: s.enterSfx }, "enter:2"] : ["enter"]);   // "קיבלתם הודעת SMS:" → the SMS sound → "בטוח או חשוד?…"
+    // "קיבלתם הודעת SMS:" → the SMS sound → "בטוח או חשוד?…"; a phone call only rings – the caller is heard once the
+    // learner answers (the green button, bindPull)
+    if (!s.enterSfx) return playVO(s.id, ["enter"]);
+    if (s.mock && s.mock.kind === "call") return playVO(s.id, isDone(s.id) ? ["enter"] : ["enter", { sfx: s.enterSfx }]);
+    playVO(s.id, ["enter", { sfx: s.enterSfx }, "enter:2"]);
   }
 
   /* -------------------------------------------------------------- helpers */
@@ -898,7 +902,7 @@
     const call = $("[data-call]", scr);
     if (call) {
       const pick = () => { $("[data-transcript]", call).hidden = false; $("[data-call-btns]", call).hidden = true; $("[data-call-state]", call).textContent = "שיחה פעילה"; call.classList.add("live"); };
-      $("[data-accept]", call).addEventListener("click", pick);
+      $("[data-accept]", call).addEventListener("click", () => { pick(); playVO(s.id, ["enter:2"]); });   // the caller speaks
       $("[data-decline]", call).addEventListener("click", () => toast("נסו לענות – כדי לשמוע מה המתקשר מבקש"));
       if (isDone(s.id)) pick();
     }

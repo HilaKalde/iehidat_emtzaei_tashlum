@@ -887,7 +887,7 @@ const VO = {
   "s3-learn": { file: "29.mp3", enter: [0.04,13.06], "layer:phish": [13.06,47.98], "layer:imperson": [47.98,86.4], "layer:identity": [86.4,121.42], "layer:shop": [121.42,163.95], "layer:emotion": [163.95,196.63], all: [196.63,216.62] },
   "s3-howto": { file: "30.mp3", enter: [0.03,29.08] },
   "s3-q1": { file: "31.mp3", enter: [0.11,4.82], "enter:2": [4.9,8.61],   /* the SMS sound plays between the two (enterSfx) */ ok: [8.61,12.18], bad: [12.18,14.48], explain: [14.48,28.13] },
-  "s3-q2": { file: "32.mp3", enter: [0.06,5.55], "enter:2": [5.6,22.29],   /* the phone rings between the two */ ok: [22.29,25.2], bad: [25.2,27.58], explain: [27.58,37.79] },
+  "s3-q2": { file: "32.mp3", enter: [0.06,5.55], "enter:2": [5.6,22.29],   /* "enter" + the ring as the slide opens; "enter:2" (the caller) once the green button answers the call */ ok: [22.29,25.2], bad: [25.2,27.58], explain: [27.58,37.79] },
   "s3-q3": { file: "33.mp3", enter: [0.06,9.78], ok: [9.78,13.15], bad: [13.15,15.37], explain: [15.37,31.01] },
   "s3-q4": { file: "34.mp3", enter: [0.01,6.42], "enter:2": [6.46,9.82],   /* the e-mail sound plays between the two */ ok: [9.82,12.78], bad: [12.78,14.77], explain: [14.77,23.81] },
   "s3-q5": { file: "35.mp3", enter: [0.14,8.49], ok: [8.49,11.56], bad: [11.56,13.74], explain: [13.74,24.57] },
