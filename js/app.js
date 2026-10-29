@@ -87,7 +87,8 @@
     // "קיבלתם הודעת SMS:" → the SMS sound → the message read aloud ("msg") → "בטוח או חשוד?…" (parts a slide lacks are
     // skipped); a phone call only rings – the caller is heard once the learner answers (the green button, bindPull)
     if (s.mock && s.mock.kind === "call") return playVO(s.id, isDone(s.id) ? ["enter"] : ["enter", { sfx: s.enterSfx }]);
-    playVO(s.id, s.enterSfx ? ["enter", { sfx: s.enterSfx }, "msg", "enter:2"] : ["enter", "msg", "enter:2"]);
+    // ("ask": a question that comes before the message – slide 38)
+    playVO(s.id, s.enterSfx ? ["enter", { sfx: s.enterSfx }, "ask", "msg", "enter:2"] : ["enter", "ask", "msg", "enter:2"]);
   }
 
   /* -------------------------------------------------------------- helpers */
