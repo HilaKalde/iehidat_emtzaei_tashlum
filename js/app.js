@@ -41,7 +41,8 @@
      number; cut by _tools/vo-cut.js along the VO table in data.js). "enter" plays when the slide opens, a layer's part when
      it opens, the feedback part after an answer, and so on. Each file plays from its start to its end – no seeking inside
      a recording, which browsers do only roughly when an mp3 is read straight from disk.
-     A part is a key of the slide's VO entry, or { file } (a station situation, the tennis heads shared from slide 43). */
+     A part is a key of the slide's VO entry, or { file } (a station situation, the tennis heads shared from slide 43),
+     or { sfx } – a sound effect between two parts (assets/audio/<sfx>: the SMS / e-mail arriving). */
   let voEl = null, voToken = 0;
   const voFile = (id, key) => VO[id].file.slice(0, 2) + "-" + key.replace(/:/g, "-") + ".mp3";
   function stopVO() { voToken++; if (voEl) try { voEl.pause(); } catch (e) {} caption(null); }
@@ -49,10 +50,10 @@
     stopVO();
     if (!state.sound || !VO[id]) return;
     const token = voToken;
-    const files = keys.map(k => typeof k === "object" ? k.file : VO[id][k] ? voFile(id, k) : null).filter(Boolean);
+    const files = keys.map(k => typeof k === "object" ? k.file || k.sfx : VO[id][k] ? voFile(id, k) : null).filter(Boolean);
     // a fresh player for every part (reusing one made some browsers play a moment of the next file from the old
     // position first); the next part is loaded while the current one plays, so there is no gap between them
-    const make = file => { const a = new Audio(AUDIO + "vo/" + file); a.preload = "auto"; return a; };
+    const make = file => { const a = new Audio(AUDIO + (/^sfx-/.test(file) ? "" : "vo/") + file); a.preload = "auto"; if (/^sfx-/.test(file)) a.volume = .5; return a; };
     let next = files.length ? make(files[0]) : null;
     if (delay) await new Promise(r => setTimeout(r, delay));
     for (let i = 0; i < files.length; i++) {
@@ -80,7 +81,7 @@
       return playVO(s.id, i < 0 ? ["enter"] : ["enter", voRow(s.id, i)]);
     }
     if (s.type === "tennis") { const a = ans(s.id); return a && a.completed ? stopVO() : playVO(s.id, ["clue" + ((a && a.clue) || 1)]); }
-    playVO(s.id, ["enter"]);
+    playVO(s.id, s.enterSfx ? ["enter", { sfx: s.enterSfx }, "enter:2"] : ["enter"]);   // "קיבלתם הודעת SMS:" → the SMS sound → "בטוח או חשוד?…"
   }
 
   /* -------------------------------------------------------------- helpers */
@@ -394,7 +395,7 @@
         <p class="txt ex-lead">${s.lead}</p>
         <div class="ex-grid">${s.items.map(btn).join("")}</div>
         <p class="ex-progress ${allVisited(s) ? "done" : ""}" data-ex-progress ${allVisited(s) && !s.noDoneMsg ? "" : "hidden"}>${progressText(s)}</p>
-        ${s.afterAll ? `<div class="ex-after" data-after ${s.afterAll.always || allVisited(s) ? "" : "hidden"}><span class="ic-dark"><img src="${ICON + s.afterAll.icon}" alt=""></span><p>${s.afterAll.text}</p></div>` : ""}
+        ${s.afterAll ? `<div class="ex-after ${s.afterAll.always ? A("rise", 300 + s.items.length * 120 + 250) : ""}" data-after ${s.afterAll.always || allVisited(s) ? "" : "hidden"}><span class="ic-dark"><img src="${ICON + s.afterAll.icon}" alt=""></span><p>${s.afterAll.text}</p></div>` : ""}
         ${s.disclaimer ? `<p class="ex-disc">${s.disclaimer}</p>` : ""}
       </div>
       ${s.items.map(it => layerHtml("it-" + it.key, exploreLayer(s, it))).join("")}`;
@@ -422,6 +423,9 @@
     $$("[data-info]", scr).forEach(b => b.addEventListener("click", () => {
       const box = $("[data-info-box]", b.closest(".modal"));
       box.innerHTML = s.info[b.dataset.info]; box.hidden = !box.hidden;
+      // the term's explanation is narrated only here (it is cut out of the layer's narration); then the layer goes on
+      const k = "info:" + b.dataset.info;
+      if (!box.hidden && VO[s.id] && VO[s.id][k]) playVO(s.id, [k, k + ":then"]);
     }));
     if (s.hero === "adam" && !allVisited(s)) new Image().src = LIKE_SRC;        // preload the thumbs-up still
     scr._onLayerClose = () => {
