@@ -394,7 +394,7 @@
         <p class="txt ex-lead">${s.lead}</p>
         <div class="ex-grid">${s.items.map(btn).join("")}</div>
         <p class="ex-progress ${allVisited(s) ? "done" : ""}" data-ex-progress ${allVisited(s) && !s.noDoneMsg ? "" : "hidden"}>${progressText(s)}</p>
-        ${s.afterAll ? `<div class="ex-after" data-after ${allVisited(s) ? "" : "hidden"}><span class="ic-dark"><img src="${ICON + s.afterAll.icon}" alt=""></span><p>${s.afterAll.text}</p></div>` : ""}
+        ${s.afterAll ? `<div class="ex-after" data-after ${s.afterAll.always || allVisited(s) ? "" : "hidden"}><span class="ic-dark"><img src="${ICON + s.afterAll.icon}" alt=""></span><p>${s.afterAll.text}</p></div>` : ""}
         ${s.disclaimer ? `<p class="ex-disc">${s.disclaimer}</p>` : ""}
       </div>
       ${s.items.map(it => layerHtml("it-" + it.key, exploreLayer(s, it))).join("")}`;
