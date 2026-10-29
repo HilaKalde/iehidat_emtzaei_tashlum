@@ -7,6 +7,9 @@
 
   const W = 1200, H = 675;
   const IMG = "assets/img/", UI = "assets/ui/", ICON = "assets/icons/", AUDIO = "assets/audio/", VID = "assets/video/";
+  // the version tag of this script (index.html: app.js?v=…) – added to the narration files too, so a re-cut part is
+  // never played from the browser's cache
+  const VER = ((document.currentScript && document.currentScript.src.match(/\?v=[\w]+/)) || [""])[0];
   const byId = {};
   DATA.screens.forEach((s, i) => { s.index = i; byId[s.id] = s; });
 
@@ -53,7 +56,7 @@
     const files = keys.map(k => typeof k === "object" ? k.file || k.sfx : VO[id][k] ? voFile(id, k) : null).filter(Boolean);
     // a fresh player for every part (reusing one made some browsers play a moment of the next file from the old
     // position first); the next part is loaded while the current one plays, so there is no gap between them
-    const make = file => { const a = new Audio(AUDIO + (/^sfx-/.test(file) ? "" : "vo/") + file); a.preload = "auto"; if (/^sfx-/.test(file)) a.volume = /ring/.test(file) ? .85 : .5; return a; };
+    const make = file => { const a = new Audio(AUDIO + (/^sfx-/.test(file) ? "" : "vo/") + file + VER);a.preload = "auto"; if (/^sfx-/.test(file)) a.volume = /ring/.test(file) ? .85 : .5; return a; };
     let next = files.length ? make(files[0]) : null;
     if (delay) await new Promise(r => setTimeout(r, delay));
     for (let i = 0; i < files.length; i++) {
