@@ -884,7 +884,7 @@ const VO = {
   "s3-ad": { file: "26.mp3", enter: [0.09,10.47] },
   "s3-stop": { file: "27.mp3", clicked: [0.04,15.04], skipped: [15.04,31.34], enter: [32.82,45.82] },   // the recording has an extra "מתחילים את הסט" at 31.3–32.7 – left out; it is heard once, at the end
   "s3-video": { file: "28.mp3", enter: [0.19,2.85] },
-  "s3-learn": { file: "29.mp3", enter: [0.04,13.06], "layer:phish": [13.06,47.98], "layer:imperson": [[47.98,78.54],[0,7.86,"r2-29.mp3"]], "layer:identity": [86.4,121.42], "layer:shop": [121.42,163.95], "layer:emotion": [163.95,196.63], all: [196.63,216.62] },
+  "s3-learn": { file: "29.mp3", enter: [0.04,13.06], "layer:phish": [13.06,47.98], "layer:imperson": [[47.98,78.54],[190.5,191.5],[1.34,7.86,"r2-29.mp3"]],   /* "איך נמנעים?" from the emotion layer (the narrator said "איך מתגוננים?" here), then the round-2 take from "מנתקים" */ "layer:identity": [86.4,121.42], "layer:shop": [121.42,163.95], "layer:emotion": [163.95,196.63], all: [196.63,216.62] },
   "s3-howto": { file: "30.mp3", enter: [0.03,29.08] },
   "s3-q1": { file: "31.mp3", enter: [0.11,4.82], msg: [0,9.5,"r2-31.mp3"], "enter:2": [4.9,8.61],   /* the SMS sound plays between the two (enterSfx) */ ok: [8.61,12.18], bad: [12.18,14.48], explain: [14.48,28.13] },
   "s3-q2": { file: "32.mp3", enter: [0.06,5.55], "enter:2": [5.6,22.29],   /* "enter" + the ring as the slide opens; "enter:2" (the caller) once the green button answers the call */ ok: [22.29,25.2], bad: [25.2,27.58], explain: [27.58,37.79] },
